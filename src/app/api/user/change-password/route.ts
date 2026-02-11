@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { cookies } from "next/headers";
 import { COOKIE_NAME, decodeSession } from "@/lib/session";
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 
 // تغيير كلمة المرور للمستخدم الحالي
 export async function PUT(request: Request) {
