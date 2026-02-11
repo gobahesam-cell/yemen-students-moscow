@@ -37,33 +37,41 @@ export default function AccountPageClient({ user }: AccountPageProps) {
 
     const isRTL = locale === "ar";
 
-    const joinDate = new Date(user.createdAt).toLocaleDateString(locale === 'ar' ? "ar-EG" : "ru-RU", {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    });
+    const joinDate = user?.createdAt
+        ? new Date(user.createdAt).toLocaleDateString(locale === 'ar' ? "ar-EG" : "ru-RU", {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        })
+        : "";
 
     useEffect(() => {
         // جلب الفعاليات التي سجل فيها العضو فعلياً
         fetch("/api/user/events")
-            .then(res => res.json())
+            .then(res => res.ok ? res.json() : [])
             .then(data => {
                 if (Array.isArray(data)) {
                     setMyEvents(data);
                 }
                 setLoadingEvents(false);
             })
-            .catch(() => setLoadingEvents(false));
+            .catch((err) => {
+                console.error("Fetch events error:", err);
+                setLoadingEvents(false);
+            });
 
         // جلب الدورات المسجل فيها
         getMyCoursesAction()
             .then(result => {
-                if (result.courses) {
+                if (result && result.courses) {
                     setMyCourses(result.courses);
                 }
                 setLoadingCourses(false);
             })
-            .catch(() => setLoadingCourses(false));
+            .catch((err) => {
+                console.error("Fetch courses error:", err);
+                setLoadingCourses(false);
+            });
     }, []);
 
     const handleAvatarUpload = async (result: any) => {
