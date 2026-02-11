@@ -1,14 +1,12 @@
 import { NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
-import { existsSync } from "fs";
-import path from "path";
+import { uploadToCloudinary } from "@/lib/cloudinary";
 
-// POST upload file
+// POST upload file - تم التحويل إلى Cloudinary ليعمل على Vercel
 export async function POST(request: Request) {
     try {
         const formData = await request.formData();
         const file = formData.get("file") as File;
-        const folder = (formData.get("folder") as string) || "uploads";
+        const folder = (formData.get("folder") as string) || "yemen_students/uploads";
 
         if (!file) {
             return NextResponse.json({ error: "No file provided" }, { status: 400 });
@@ -32,47 +30,30 @@ export async function POST(request: Request) {
             );
         }
 
-        // Max file size: 50MB
-        const maxSize = 50 * 1024 * 1024;
-        if (file.size > maxSize) {
-            return NextResponse.json(
-                { error: "File too large. Maximum size: 50MB" },
-                { status: 400 }
-            );
+        // Max file size check (50MB check remains, but Cloudinary free tier has its own limits)
+        if (file.size > 50 * 1024 * 1024) {
+            return NextResponse.json({ error: "File too large. Max 50MB" }, { status: 400 });
         }
 
-        // Create upload directory
-        const uploadDir = path.join(process.cwd(), "public", "uploads", folder);
-        if (!existsSync(uploadDir)) {
-            await mkdir(uploadDir, { recursive: true });
-        }
-
-        // Generate unique filename
-        const timestamp = Date.now();
-        const randomStr = Math.random().toString(36).substring(2, 8);
-        const ext = path.extname(file.name);
-        const fileName = `${timestamp}-${randomStr}${ext}`;
-        const filePath = path.join(uploadDir, fileName);
-
-        // Convert file to buffer and write
+        // تحويل الملف إلى data URI للرفع لـ Cloudinary
         const bytes = await file.arrayBuffer();
         const buffer = Buffer.from(bytes);
-        await writeFile(filePath, buffer);
+        const base64 = buffer.toString("base64");
+        const dataUri = `data:${file.type};base64,${base64}`;
 
-        // Return public URL
-        const fileUrl = `/uploads/${folder}/${fileName}`;
+        const cloudinaryRes = await uploadToCloudinary(dataUri, folder);
 
         return NextResponse.json({
             success: true,
-            url: fileUrl,
-            fileName: fileName,
+            url: cloudinaryRes.secure_url,
+            fileName: cloudinaryRes.public_id,
             originalName: file.name,
             size: file.size,
             type: file.type,
         });
-    } catch (error) {
+    } catch (error: any) {
         console.error("Upload error:", error);
-        return NextResponse.json({ error: "Failed to upload file" }, { status: 500 });
+        return NextResponse.json({ error: "Failed to upload file to storage" }, { status: 500 });
     }
 }
 

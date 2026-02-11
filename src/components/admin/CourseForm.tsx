@@ -176,7 +176,7 @@ export default function CourseForm({ initialData }: CourseFormProps) {
                                             <img src={formData.thumbnail} className="w-full h-full object-cover" />
                                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                                 <CldUploadButton
-                                                    uploadPreset="ysm_preset"
+                                                    uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "ysm_uploads"}
                                                     onSuccess={(res: any) => setFormData({ ...formData, thumbnail: res.info.secure_url })}
                                                     className="bg-white text-black px-4 py-2 rounded-xl font-bold text-xs"
                                                 >
@@ -190,7 +190,7 @@ export default function CourseForm({ initialData }: CourseFormProps) {
                                                 <ImageIcon size={32} className="text-slate-300" />
                                             </div>
                                             <CldUploadButton
-                                                uploadPreset="ysm_preset"
+                                                uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "ysm_uploads"}
                                                 onSuccess={(res: any) => setFormData({ ...formData, thumbnail: res.info.secure_url })}
                                                 className="text-yellow-600 font-bold text-sm hover:underline"
                                             >
