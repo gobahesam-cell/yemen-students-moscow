@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:16
+    container_name: ysm_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ysm
+      POSTGRES_PASSWORD: ysm_password
+      POSTGRES_DB: ysm_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - ysm_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  ysm_postgres_data:

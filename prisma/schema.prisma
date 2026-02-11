@@ -1,0 +1,289 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id             String             @id @default(cuid())
+  name           String?
+  nameRu         String?            // الاسم بالروسية
+  email          String             @unique
+  passwordHash   String
+  role           Role               @default(MEMBER)
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  image          String?
+  
+  // معلومات إضافية
+  university     String?            // الجامعة
+  city           String?            // المدينة في روسيا
+  bio            String?            // نبذة تعريفية
+  phone          String?            // رقم الهاتف
+  telegram       String?            // حساب تيليجرام
+  
+  // حالة الاتصال
+  lastSeenAt     DateTime?          // آخر ظهور
+  isOnline       Boolean            @default(false)
+  
+  // الموافقات القانونية
+  agreedToTerms      Boolean        @default(false)  // الموافقة على الشروط
+  agreedToPrivacy    Boolean        @default(false)  // الموافقة على سياسة الخصوصية
+  dataConsentDate    DateTime?      // تاريخ الموافقة على معالجة البيانات (القانون الروسي)
+  
+  // العلاقات
+  rsvps          Rsvp[]
+  enrollments    CourseEnrollment[]
+  lessonProgress LessonProgress[]
+  quizAttempts   QuizAttempt[]
+  photos         Photo[]
+}
+
+model Post {
+  id         String   @id @default(cuid())
+  title      String
+  content    String
+  category   String   @default("عام")
+  titleRu    String?
+  contentRu  String?
+  categoryRu String?  @default("Общие")
+  image      String?
+  isPinned   Boolean  @default(false)
+  isDraft    Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Event {
+  id            String   @id @default(cuid())
+  title         String
+  description   String
+  date          DateTime
+  location      String
+  image         String?
+  capacity      Int?     @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  descriptionRu String?
+  locationRu    String?
+  titleRu       String?
+  rsvps         Rsvp[]
+  albums        Album[]
+
+  @@map("events")
+}
+
+model Rsvp {
+  id        String   @id @default(cuid())
+  userId    String
+  eventId   String
+  createdAt DateTime @default(now())
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventId])
+  @@map("rsvps")
+}
+
+// ==================== نظام الدورات التعليمية ====================
+
+model Course {
+  id            String           @id @default(cuid())
+  slug          String           @unique
+  title         String
+  titleRu       String?
+  description   String
+  descriptionRu String?
+  thumbnail     String?
+  duration      Int?             // المدة الكلية بالدقائق
+  isPublished   Boolean          @default(false)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  materials     CourseMaterial[] // للتوافق مع البيانات القديمة
+  units         CourseUnit[]
+  enrollments   CourseEnrollment[]
+
+  @@map("courses")
+}
+
+model CourseMaterial {
+  id        String   @id @default(cuid())
+  title     String
+  titleRu   String?
+  type      String
+  url       String
+  courseId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@map("course_materials")
+}
+
+// الوحدات (الفصول)
+model CourseUnit {
+  id          String   @id @default(cuid())
+  title       String
+  titleRu     String?
+  description String?
+  order       Int      @default(0)
+  courseId    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessons     CourseLesson[]
+  quiz        Quiz?
+
+  @@map("course_units")
+}
+
+// الدروس
+model CourseLesson {
+  id            String   @id @default(cuid())
+  title         String
+  titleRu       String?
+  description   String?
+  descriptionRu String?
+  type          LessonType @default(VIDEO)
+  videoUrl      String?
+  pdfUrl        String?
+  content       String?    // للمقالات
+  duration      Int?       // بالدقائق
+  order         Int        @default(0)
+  isFree        Boolean    @default(false) // درس مجاني للعرض
+  unitId        String
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  unit          CourseUnit @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  progress      LessonProgress[]
+
+  @@map("course_lessons")
+}
+
+enum LessonType {
+  VIDEO
+  PDF
+  ARTICLE
+}
+
+// تسجيل الطالب في الدورة
+model CourseEnrollment {
+  id              String    @id @default(cuid())
+  userId          String
+  courseId        String
+  progress        Int       @default(0)  // نسبة مئوية 0-100
+  currentLessonId String?
+  enrolledAt      DateTime  @default(now())
+  lastAccessedAt  DateTime  @default(now())
+  completedAt     DateTime?
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course          Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@map("course_enrollments")
+}
+
+// تقدم الطالب في الدروس
+model LessonProgress {
+  id          String    @id @default(cuid())
+  userId      String
+  lessonId    String
+  completed   Boolean   @default(false)
+  watchTime   Int?      // بالثواني (للفيديو)
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson      CourseLesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+  @@map("lesson_progress")
+}
+
+// ==================== نظام الاختبارات ====================
+
+model Quiz {
+  id           String   @id @default(cuid())
+  title        String
+  titleRu      String?
+  description  String?
+  passingScore Int      @default(70) // النسبة المطلوبة للنجاح
+  unitId       String   @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  unit         CourseUnit @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  questions    QuizQuestion[]
+  attempts     QuizAttempt[]
+
+  @@map("quizzes")
+}
+
+model QuizQuestion {
+  id           String   @id @default(cuid())
+  question     String
+  questionRu   String?
+  options      String[] // الخيارات
+  optionsRu    String[]
+  correctIndex Int      // رقم الإجابة الصحيحة (0-based)
+  order        Int      @default(0)
+  quizId       String
+  quiz         Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+  @@map("quiz_questions")
+}
+
+model QuizAttempt {
+  id          String   @id @default(cuid())
+  userId      String
+  quizId      String
+  score       Int      // النسبة المئوية
+  passed      Boolean
+  answers     Int[]    // الإجابات المختارة
+  completedAt DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quiz        Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+  @@map("quiz_attempts")
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+  INSTRUCTOR
+  MEMBER
+}
+
+// ==================== نظام معرض الوسائط ====================
+
+model Album {
+  id          String   @id @default(cuid())
+  titleAr     String
+  titleRu     String?
+  description String?
+  coverImage  String?
+  eventId     String?
+  event       Event?   @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  isPublic    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  photos      Photo[]
+
+  @@map("albums")
+}
+
+model Photo {
+  id          String   @id @default(cuid())
+  url         String
+  thumbnail   String?
+  caption     String?
+  albumId     String
+  album       Album    @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  uploaderId  String
+  uploader    User     @relation(fields: [uploaderId], references: [id], onDelete: Cascade)
+  isApproved  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@map("photos")
+}
+
