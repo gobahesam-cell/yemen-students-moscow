@@ -6,10 +6,11 @@ export const dynamic = "force-dynamic";
 export default async function NewsDetailsPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = await params;
   const post = await prisma.post.findUnique({
-    where: { id: params.id },
+    where: { id },
     select: {
       title: true,
       content: true,
