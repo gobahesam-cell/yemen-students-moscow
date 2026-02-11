@@ -123,16 +123,22 @@ export default function AccountPageClient({ user }: AccountPageProps) {
                                 </span>
                             )}
 
-                            <CldUploadButton
-                                uploadPreset="ysm_preset"
-                                onSuccess={handleAvatarUpload}
-                                className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white"
-                            >
-                                <div className="flex flex-col items-center gap-1">
-                                    <ImageIcon size={24} />
-                                    <span className="text-[10px] font-bold uppercase tracking-wider">{t("changePhoto") || "تغيير"}</span>
+                            {process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ? (
+                                <CldUploadButton
+                                    uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "ysm_uploads"}
+                                    onSuccess={handleAvatarUpload}
+                                    className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white"
+                                >
+                                    <div className="flex flex-col items-center gap-1">
+                                        <ImageIcon size={24} />
+                                        <span className="text-[10px] font-bold uppercase tracking-wider">{t("changePhoto") || "تغيير"}</span>
+                                    </div>
+                                </CldUploadButton>
+                            ) : (
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white text-[8px] text-center p-2 font-bold">
+                                    Cloudinary Not Configured
                                 </div>
-                            </CldUploadButton>
+                            )}
 
                             {updatingAvatar && (
                                 <div className="absolute inset-0 bg-white/80 dark:bg-slate-900/80 flex items-center justify-center">

@@ -170,35 +170,42 @@ export default function CourseForm({ initialData }: CourseFormProps) {
 
                             <div className="space-y-2">
                                 <label className="text-sm font-bold text-slate-500 px-1 text-center block">{t("coverImage")}</label>
-                                <div className="relative aspect-video rounded-2xl border-2 border-dashed border-slate-200 dark:border-white/10 overflow-hidden group">
-                                    {formData.thumbnail ? (
-                                        <>
-                                            <img src={formData.thumbnail} className="w-full h-full object-cover" />
-                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                {process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ? (
+                                    <div className="relative aspect-video rounded-2xl border-2 border-dashed border-slate-200 dark:border-white/10 overflow-hidden group">
+                                        {formData.thumbnail ? (
+                                            <>
+                                                <img src={formData.thumbnail} className="w-full h-full object-cover" />
+                                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                    <CldUploadButton
+                                                        uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "ysm_uploads"}
+                                                        onSuccess={(res: any) => setFormData({ ...formData, thumbnail: res.info.secure_url })}
+                                                        className="bg-white text-black px-4 py-2 rounded-xl font-bold text-xs"
+                                                    >
+                                                        {t("changeImage")}
+                                                    </CldUploadButton>
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-4 text-center">
+                                                <div className="p-3 bg-slate-50 dark:bg-white/5 rounded-2xl">
+                                                    <ImageIcon size={32} className="text-slate-300" />
+                                                </div>
                                                 <CldUploadButton
                                                     uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "ysm_uploads"}
                                                     onSuccess={(res: any) => setFormData({ ...formData, thumbnail: res.info.secure_url })}
-                                                    className="bg-white text-black px-4 py-2 rounded-xl font-bold text-xs"
+                                                    className="text-yellow-600 font-bold text-sm hover:underline"
                                                 >
-                                                    {t("changeImage")}
+                                                    {t("uploadImage")}
                                                 </CldUploadButton>
                                             </div>
-                                        </>
-                                    ) : (
-                                        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-4 text-center">
-                                            <div className="p-3 bg-slate-50 dark:bg-white/5 rounded-2xl">
-                                                <ImageIcon size={32} className="text-slate-300" />
-                                            </div>
-                                            <CldUploadButton
-                                                uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "ysm_uploads"}
-                                                onSuccess={(res: any) => setFormData({ ...formData, thumbnail: res.info.secure_url })}
-                                                className="text-yellow-600 font-bold text-sm hover:underline"
-                                            >
-                                                {t("uploadImage")}
-                                            </CldUploadButton>
-                                        </div>
-                                    )}
-                                </div>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <div className="aspect-video rounded-2xl border-2 border-dashed border-red-200 bg-red-50 dark:bg-red-500/5 flex items-center justify-center text-red-500 p-4 text-center text-xs font-bold">
+                                        Cloudinary variables not set in Vercel.
+                                        Please add them to the dashboard.
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </AdminCard>
