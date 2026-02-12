@@ -6,7 +6,6 @@ import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Save, Loader2, User, GraduationCap, Phone, Camera, Check, X } from "lucide-react";
-import { CldUploadWidget } from "next-cloudinary";
 
 const UNIVERSITIES = [
     { id: "msu", name: "جامعة موسكو الحكومية", nameRu: "МГУ им. М.В. Ломоносова" },
@@ -171,26 +170,47 @@ export default function ProfileSettingsClient({ user }: { user: UserData }) {
                                         )}
                                     </div>
 
-                                    <CldUploadWidget
-                                        uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "ysm_uploads"}
-                                        onSuccess={handleAvatarUpload}
-                                        options={{
-                                            maxFiles: 1,
-                                            cropping: true,
-                                            croppingAspectRatio: 1,
-                                            folder: "avatars",
-                                        }}
+                                    <button
+                                        type="button"
+                                        onClick={() => document.getElementById('avatar-input')?.click()}
+                                        className="absolute -bottom-2 -right-2 w-10 h-10 bg-yellow-500 hover:bg-yellow-400 rounded-xl flex items-center justify-center shadow-lg transition-all"
                                     >
-                                        {({ open }) => (
-                                            <button
-                                                type="button"
-                                                onClick={() => open()}
-                                                className="absolute -bottom-2 -right-2 w-10 h-10 bg-yellow-500 hover:bg-yellow-400 rounded-xl flex items-center justify-center shadow-lg transition-all"
-                                            >
-                                                <Camera size={18} className="text-black" />
-                                            </button>
-                                        )}
-                                    </CldUploadWidget>
+                                        <Camera size={18} className="text-black" />
+                                    </button>
+                                    <input
+                                        id="avatar-input"
+                                        type="file"
+                                        accept="image/*"
+                                        className="hidden"
+                                        onChange={async (e) => {
+                                            const file = e.target.files?.[0];
+                                            if (!file) return;
+
+                                            setSaving(true);
+                                            try {
+                                                const formData = new FormData();
+                                                formData.append("file", file);
+                                                formData.append("folder", "yemen_students/avatars");
+
+                                                const res = await fetch("/api/upload", {
+                                                    method: "POST",
+                                                    body: formData,
+                                                });
+
+                                                const data = await res.json();
+                                                if (data.success) {
+                                                    setAvatarUrl(data.url);
+                                                } else {
+                                                    setError(data.error || "خطأ في رفع الصورة");
+                                                }
+                                            } catch (err) {
+                                                console.error("Upload error:", err);
+                                                setError("فشل رفع الصورة");
+                                            } finally {
+                                                setSaving(false);
+                                            }
+                                        }}
+                                    />
                                 </div>
 
                                 <div>

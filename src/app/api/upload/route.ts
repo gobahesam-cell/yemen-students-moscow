@@ -1,9 +1,19 @@
 import { NextResponse } from "next/server";
 import { uploadToCloudinary } from "@/lib/cloudinary";
+import { cookies } from "next/headers";
+import { COOKIE_NAME, decodeSession } from "@/lib/session-core";
 
 // POST upload file - تم التحويل إلى Cloudinary ليعمل على Vercel
 export async function POST(request: Request) {
     try {
+        const cookieStore = await cookies();
+        const token = cookieStore.get(COOKIE_NAME)?.value;
+        const session = await decodeSession(token);
+
+        if (!session) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
         const formData = await request.formData();
         const file = formData.get("file") as File;
         const folder = (formData.get("folder") as string) || "yemen_students/uploads";

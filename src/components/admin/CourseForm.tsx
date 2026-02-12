@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { AdminCard } from "./AdminCard";
 import { Save, ArrowRight, BookOpen, Globe, Image as ImageIcon, Loader2 } from "lucide-react";
 import { CldUploadButton } from "next-cloudinary";
+import ImageUploader from "./ImageUploader";
 import { upsertCourseAction } from "@/app/actions/courses";
 import { useTranslations } from "next-intl";
 
@@ -168,45 +169,12 @@ export default function CourseForm({ initialData }: CourseFormProps) {
                                 <p className="text-[10px] text-slate-400 px-1">{t("slugHint")}</p>
                             </div>
 
-                            <div className="space-y-2">
-                                <label className="text-sm font-bold text-slate-500 px-1 text-center block">{t("coverImage")}</label>
-                                {process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ? (
-                                    <div className="relative aspect-video rounded-2xl border-2 border-dashed border-slate-200 dark:border-white/10 overflow-hidden group">
-                                        {formData.thumbnail ? (
-                                            <>
-                                                <img src={formData.thumbnail} className="w-full h-full object-cover" />
-                                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                                    <CldUploadButton
-                                                        uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "ysm_uploads"}
-                                                        onSuccess={(res: any) => setFormData({ ...formData, thumbnail: res.info.secure_url })}
-                                                        className="bg-white text-black px-4 py-2 rounded-xl font-bold text-xs"
-                                                    >
-                                                        {t("changeImage")}
-                                                    </CldUploadButton>
-                                                </div>
-                                            </>
-                                        ) : (
-                                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-4 text-center">
-                                                <div className="p-3 bg-slate-50 dark:bg-white/5 rounded-2xl">
-                                                    <ImageIcon size={32} className="text-slate-300" />
-                                                </div>
-                                                <CldUploadButton
-                                                    uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "ysm_uploads"}
-                                                    onSuccess={(res: any) => setFormData({ ...formData, thumbnail: res.info.secure_url })}
-                                                    className="text-yellow-600 font-bold text-sm hover:underline"
-                                                >
-                                                    {t("uploadImage")}
-                                                </CldUploadButton>
-                                            </div>
-                                        )}
-                                    </div>
-                                ) : (
-                                    <div className="aspect-video rounded-2xl border-2 border-dashed border-red-200 bg-red-50 dark:bg-red-500/5 flex items-center justify-center text-red-500 p-4 text-center text-xs font-bold">
-                                        Cloudinary variables not set in Vercel.
-                                        Please add them to the dashboard.
-                                    </div>
-                                )}
-                            </div>
+                            <label className="text-sm font-bold text-slate-500 px-1 text-center block">{t("coverImage")}</label>
+                            <ImageUploader
+                                value={formData.thumbnail || ""}
+                                onChange={(url: string) => setFormData({ ...formData, thumbnail: url })}
+                                folder="yemen_students/courses"
+                            />
                         </div>
                     </AdminCard>
                 </div>
