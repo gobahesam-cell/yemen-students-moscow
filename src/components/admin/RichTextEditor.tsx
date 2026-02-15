@@ -7,6 +7,8 @@ import Color from "@tiptap/extension-color";
 import TextStyle from "@tiptap/extension-text-style";
 import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
+import { useTranslations } from "next-intl";
+import { motion } from "framer-motion";
 import {
     Bold, Italic, List, ListOrdered, Quote, Undo, Redo,
     Type, Link as LinkIcon, Image as ImageIcon, Palette, Loader2
@@ -20,11 +22,12 @@ interface RichTextEditorProps {
 const MenuBar = ({ editor }: { editor: any }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [imageUploading, setImageUploading] = useState(false);
+    const t = useTranslations("Admin.forms");
 
     if (!editor) return null;
 
     const addLink = () => {
-        const url = window.prompt("أدخل الرابط:");
+        const url = window.prompt(t("enterUrl") || "Enter URL:");
         if (url) {
             editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
         }
@@ -36,12 +39,12 @@ const MenuBar = ({ editor }: { editor: any }) => {
 
         const validTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
         if (!validTypes.includes(file.type)) {
-            alert("نوع الملف غير مدعوم (JPEG, PNG, WebP, GIF فقط)");
+            alert(t("uploadInvalidType") || "Unsupported file type");
             return;
         }
 
         if (file.size > 10 * 1024 * 1024) {
-            alert("حجم الملف يتجاوز 10MB");
+            alert(t("uploadTooLarge") || "File too large");
             return;
         }
 
@@ -60,75 +63,96 @@ const MenuBar = ({ editor }: { editor: any }) => {
             if (res.ok && data.url) {
                 editor.chain().focus().setImage({ src: data.url }).run();
             } else {
-                alert(data.error || "فشل في رفع الصورة");
+                alert(data.error || t("uploadError") || "Upload failed");
             }
         } catch {
-            alert("فشل في رفع الصورة");
+            alert(t("uploadError") || "Upload failed");
         } finally {
             setImageUploading(false);
             e.target.value = "";
         }
     };
 
-    const addImage = () => {
-        fileInputRef.current?.click();
-    };
+    const EditorButton = ({
+        onClick,
+        isActive,
+        disabled,
+        children,
+        title
+    }: {
+        onClick: () => void,
+        isActive?: boolean,
+        disabled?: boolean,
+        children: React.ReactNode,
+        title?: string
+    }) => (
+        <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            type="button"
+            onClick={onClick}
+            disabled={disabled}
+            title={title}
+            className={`
+                p-2.5 rounded-xl transition-all duration-300 flex items-center justify-center
+                ${isActive
+                    ? "bg-slate-900 dark:bg-yellow-500 text-white dark:text-black shadow-lg shadow-black/5 dark:shadow-yellow-500/20"
+                    : "bg-white/50 dark:bg-white/5 text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-white dark:hover:bg-white/10"
+                }
+                disabled:opacity-50 disabled:cursor-not-allowed
+            `}
+        >
+            {children}
+        </motion.button>
+    );
 
     return (
-        <div className="flex flex-wrap gap-1 p-2 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
-            <button
-                type="button"
-                onClick={() => editor.chain().focus().toggleBold().run()}
-                className={`p-2 rounded-lg transition-colors ${editor.isActive("bold") ? "bg-blue-100 text-blue-600 dark:bg-blue-500/20" : "hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400"}`}
-            >
-                <Bold size={18} />
-            </button>
-            <button
-                type="button"
-                onClick={() => editor.chain().focus().toggleItalic().run()}
-                className={`p-2 rounded-lg transition-colors ${editor.isActive("italic") ? "bg-blue-100 text-blue-600 dark:bg-blue-500/20" : "hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400"}`}
-            >
-                <Italic size={18} />
-            </button>
-            <div className="w-px h-6 bg-slate-300 dark:bg-slate-600 mx-1 self-center" />
-            <button
-                type="button"
-                onClick={() => editor.chain().focus().toggleBulletList().run()}
-                className={`p-2 rounded-lg transition-colors ${editor.isActive("bulletList") ? "bg-blue-100 text-blue-600 dark:bg-blue-500/20" : "hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400"}`}
-            >
-                <List size={18} />
-            </button>
-            <button
-                type="button"
-                onClick={() => editor.chain().focus().toggleOrderedList().run()}
-                className={`p-2 rounded-lg transition-colors ${editor.isActive("orderedList") ? "bg-blue-100 text-blue-600 dark:bg-blue-500/20" : "hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400"}`}
-            >
-                <ListOrdered size={18} />
-            </button>
-            <button
-                type="button"
-                onClick={() => editor.chain().focus().toggleBlockquote().run()}
-                className={`p-2 rounded-lg transition-colors ${editor.isActive("blockquote") ? "bg-blue-100 text-blue-600 dark:bg-blue-500/20" : "hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400"}`}
-            >
-                <Quote size={18} />
-            </button>
-            <div className="w-px h-6 bg-slate-300 dark:bg-slate-600 mx-1 self-center" />
-            <button
-                type="button"
-                onClick={addLink}
-                className={`p-2 rounded-lg transition-colors ${editor.isActive("link") ? "bg-blue-100 text-blue-600 dark:bg-blue-500/20" : "hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400"}`}
-            >
-                <LinkIcon size={18} />
-            </button>
-            <button
-                type="button"
-                onClick={addImage}
-                disabled={imageUploading}
-                className={`p-2 rounded-lg transition-colors ${imageUploading ? "bg-yellow-100 dark:bg-yellow-500/20 text-yellow-600" : "hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400"}`}
-                title="إدراج صورة"
-            >
-                {imageUploading ? <Loader2 size={18} className="animate-spin" /> : <ImageIcon size={18} />}
-            </button>
+        <div className="flex flex-wrap items-center gap-1.5 p-3 border-b border-slate-200/50 dark:border-white/5 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-xl">
+            <div className="flex items-center gap-1">
+                <EditorButton onClick={() => editor.chain().focus().toggleBold().run()} isActive={editor.isActive("bold")}>
+                    <Bold size={16} />
+                </EditorButton>
+                <EditorButton onClick={() => editor.chain().focus().toggleItalic().run()} isActive={editor.isActive("italic")}>
+                    <Italic size={16} />
+                </EditorButton>
+            </div>
+
+            <div className="w-px h-6 bg-slate-200 dark:bg-white/10 mx-1" />
+
+            <div className="flex items-center gap-1">
+                <EditorButton onClick={() => editor.chain().focus().toggleBulletList().run()} isActive={editor.isActive("bulletList")}>
+                    <List size={16} />
+                </EditorButton>
+                <EditorButton onClick={() => editor.chain().focus().toggleOrderedList().run()} isActive={editor.isActive("orderedList")}>
+                    <ListOrdered size={16} />
+                </EditorButton>
+                <EditorButton onClick={() => editor.chain().focus().toggleBlockquote().run()} isActive={editor.isActive("blockquote")}>
+                    <Quote size={16} />
+                </EditorButton>
+            </div>
+
+            <div className="w-px h-6 bg-slate-200 dark:bg-white/10 mx-1" />
+
+            <div className="flex items-center gap-1">
+                <EditorButton onClick={addLink} isActive={editor.isActive("link")}>
+                    <LinkIcon size={16} />
+                </EditorButton>
+                <EditorButton onClick={() => fileInputRef.current?.click()} disabled={imageUploading}>
+                    {imageUploading ? <Loader2 size={16} className="animate-spin" /> : <ImageIcon size={16} />}
+                </EditorButton>
+            </div>
+
+            <div className="flex-1" />
+
+            <div className="flex items-center gap-1">
+                <EditorButton onClick={() => editor.chain().focus().undo().run()} title={t("undo") || "Undo"}>
+                    <Undo size={16} />
+                </EditorButton>
+                <EditorButton onClick={() => editor.chain().focus().redo().run()} title={t("redo") || "Redo"}>
+                    <Redo size={16} />
+                </EditorButton>
+            </div>
+
             <input
                 ref={fileInputRef}
                 type="file"
@@ -136,21 +160,6 @@ const MenuBar = ({ editor }: { editor: any }) => {
                 onChange={handleImageUpload}
                 className="hidden"
             />
-            <div className="w-px h-6 bg-slate-300 dark:bg-slate-600 mx-1 self-center" />
-            <button
-                type="button"
-                onClick={() => editor.chain().focus().undo().run()}
-                className="p-2 rounded-lg transition-colors hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400"
-            >
-                <Undo size={18} />
-            </button>
-            <button
-                type="button"
-                onClick={() => editor.chain().focus().redo().run()}
-                className="p-2 rounded-lg transition-colors hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400"
-            >
-                <Redo size={18} />
-            </button>
         </div>
     );
 };
@@ -186,9 +195,11 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
     }, [content, editor]);
 
     return (
-        <div className="w-full border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden bg-white dark:bg-slate-900 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 transition-all">
+        <div className="w-full border border-slate-200/50 dark:border-white/5 rounded-[1.5rem] md:rounded-[2rem] overflow-hidden bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl shadow-2xl shadow-black/5 focus-within:ring-4 focus-within:ring-yellow-500/10 focus-within:border-yellow-500/50 transition-all duration-500">
             <MenuBar editor={editor} />
-            <EditorContent editor={editor} />
+            <div className="bg-white/30 dark:bg-transparent">
+                <EditorContent editor={editor} />
+            </div>
         </div>
     );
 }

@@ -1,24 +1,38 @@
 "use client";
 
+import { Search } from "lucide-react";
+import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 
 export function AdminSearch() {
     const t = useTranslations("Admin");
 
     return (
-        <div className="hidden md:flex items-center w-full max-w-md bg-slate-50 dark:bg-white/5 rounded-2xl px-4 py-2.5 border border-transparent focus-within:border-slate-200 dark:focus-within:border-white/10 transition-all group">
-            <svg className="w-5 h-5 text-slate-400 group-focus-within:text-blue-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
+        <motion.div
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            className={`
+                hidden md:flex items-center w-full max-w-md 
+                bg-slate-100/50 dark:bg-white/5 backdrop-blur-md
+                rounded-2xl px-5 py-2.5 
+                border-2 border-transparent focus-within:border-yellow-500/50 
+                focus-within:bg-white dark:focus-within:bg-white/10
+                transition-all duration-300 group shadow-sm
+            `}
+        >
+            <Search
+                size={18}
+                className="text-slate-400 group-focus-within:text-yellow-600 transition-colors"
+            />
             <input
                 type="text"
                 placeholder={t("searchPlaceholder")}
-                className="bg-transparent border-none outline-none text-sm w-full mx-3 text-slate-700 dark:text-slate-200 placeholder:text-slate-400"
+                className="bg-transparent border-none outline-none text-sm w-full mx-4 text-slate-700 dark:text-slate-200 placeholder:text-slate-400 font-bold"
             />
-            <div className="hidden lg:flex gap-1">
-                <span className="text-[10px] font-bold bg-white dark:bg-white/10 px-1.5 py-0.5 rounded text-slate-400 border border-slate-200 dark:border-white/5 shadow-sm">Ctrl</span>
-                <span className="text-[10px] font-bold bg-white dark:bg-white/10 px-1.5 py-0.5 rounded text-slate-400 border border-slate-200 dark:border-white/5 shadow-sm">K</span>
+            <div className="hidden lg:flex gap-1.5">
+                <kbd className="text-[10px] font-black bg-slate-900 dark:bg-yellow-500 text-white dark:text-black px-2 py-0.5 rounded-lg border-b-2 border-slate-700 dark:border-yellow-600 shadow-sm opacity-60 group-focus-within:opacity-100 transition-opacity">Ctrl</kbd>
+                <kbd className="text-[10px] font-black bg-slate-900 dark:bg-yellow-500 text-white dark:text-black px-2 py-0.5 rounded-lg border-b-2 border-slate-700 dark:border-yellow-600 shadow-sm opacity-60 group-focus-within:opacity-100 transition-opacity">K</kbd>
             </div>
-        </div>
+        </motion.div>
     );
 }

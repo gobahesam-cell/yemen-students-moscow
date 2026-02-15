@@ -4,6 +4,7 @@ import { useState, useRef, useCallback } from "react";
 import { Upload, X, Loader2, ImageIcon, Link2 } from "lucide-react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface ImageUploaderProps {
     value: string; // URL الحالي
@@ -13,6 +14,7 @@ interface ImageUploaderProps {
 
 export default function ImageUploader({ value, onChange, folder = "yemen_students/general" }: ImageUploaderProps) {
     const t = useTranslations("Admin.forms");
+    const tf = useTranslations("Admin.forms");
     const [uploading, setUploading] = useState(false);
     const [dragOver, setDragOver] = useState(false);
     const [error, setError] = useState("");
@@ -21,14 +23,13 @@ export default function ImageUploader({ value, onChange, folder = "yemen_student
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleUpload = useCallback(async (file: File) => {
-        // التحقق من النوع
+        // Validation
         const validTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
         if (!validTypes.includes(file.type)) {
             setError(t("uploadInvalidType"));
             return;
         }
 
-        // التحقق من الحجم (10MB)
         if (file.size > 10 * 1024 * 1024) {
             setError(t("uploadTooLarge"));
             return;
@@ -89,82 +90,101 @@ export default function ImageUploader({ value, onChange, folder = "yemen_student
         setError("");
     };
 
-    // إذا يوجد صورة — نعرض المعاينة
+    // If image exists — show preview
     if (value) {
         return (
-            <div className="space-y-2">
-                <label className="text-sm font-black flex items-center gap-2">
-                    <ImageIcon size={16} className="text-indigo-600" />
-                    {t("coverImage")}
-                </label>
-                <div className="relative group rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800">
-                    <div className="aspect-video relative">
-                        <img
-                            src={value}
-                            alt="Preview"
-                            className="w-full h-full object-cover"
-                        />
-                    </div>
-                    <button
-                        type="button"
-                        onClick={handleRemove}
-                        className="absolute top-3 right-3 p-2 bg-red-500 hover:bg-red-600 text-white rounded-xl shadow-lg opacity-0 group-hover:opacity-100 transition-all"
-                        title={t("removeImage")}
-                    >
-                        <X size={16} />
-                    </button>
-                    <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/60 to-transparent p-3">
-                        <p className="text-[10px] text-white/70 truncate font-mono">{value}</p>
+            <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="relative group rounded-[1.5rem] overflow-hidden bg-slate-100 dark:bg-white/5 border border-slate-200/50 dark:border-white/5 shadow-sm"
+            >
+                <div className="aspect-video relative">
+                    <img
+                        src={value}
+                        alt="Preview"
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </div>
+
+                <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    type="button"
+                    onClick={handleRemove}
+                    className="absolute top-4 right-4 p-3 bg-red-500 text-white rounded-2xl shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-300 z-10"
+                    title={t("removeImage")}
+                >
+                    <X size={18} />
+                </motion.button>
+
+                <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-5 translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                    <div className="flex items-center gap-2">
+                        <ImageIcon size={14} className="text-white/60" />
+                        <p className="text-[10px] text-white/80 truncate font-black uppercase tracking-widest">{value}</p>
                     </div>
                 </div>
-            </div>
+            </motion.div>
         );
     }
 
-    // واجهة الرفع
+    // Upload interface
     return (
-        <div className="space-y-2">
-            <label className="text-sm font-black flex items-center gap-2">
-                <ImageIcon size={16} className="text-indigo-600" />
-                {t("coverImage")}
-            </label>
-
-            {/* منطقة السحب والإفلات */}
-            <div
+        <div className="space-y-4">
+            <motion.div
+                whileHover={{ scale: 1.005 }}
                 onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
                 onDragLeave={() => setDragOver(false)}
                 onDrop={handleDrop}
                 onClick={() => fileInputRef.current?.click()}
                 className={`
-                    relative cursor-pointer rounded-2xl border-2 border-dashed transition-all duration-300 p-8
-                    flex flex-col items-center justify-center gap-3 text-center
+                    relative cursor-pointer rounded-[2rem] border-2 border-dashed transition-all duration-500 p-10
+                    flex flex-col items-center justify-center gap-4 text-center overflow-hidden
                     ${dragOver
-                        ? "border-yellow-500 bg-yellow-50 dark:bg-yellow-500/10 scale-[1.01]"
-                        : "border-slate-200 dark:border-slate-700 hover:border-yellow-400 hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                        ? "border-yellow-500 bg-yellow-500/5 scale-[1.02] shadow-2xl shadow-yellow-500/5"
+                        : "border-slate-200 dark:border-white/10 hover:border-yellow-500/50 hover:bg-slate-50 dark:hover:bg-white/5"
                     }
-                    ${uploading ? "pointer-events-none opacity-60" : ""}
+                    ${uploading ? "pointer-events-none" : ""}
                 `}
             >
-                {uploading ? (
-                    <>
-                        <Loader2 className="animate-spin text-yellow-500" size={36} />
-                        <p className="text-sm font-bold text-slate-500">{t("uploading")}</p>
-                    </>
-                ) : (
-                    <>
-                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-colors ${dragOver ? "bg-yellow-500/20" : "bg-slate-100 dark:bg-slate-800"}`}>
-                            <Upload className={`${dragOver ? "text-yellow-600" : "text-slate-400"}`} size={24} />
-                        </div>
-                        <div>
-                            <p className="text-sm font-bold text-slate-700 dark:text-slate-300">
-                                {t("dragDrop")}
-                            </p>
-                            <p className="text-[10px] text-slate-400 mt-1 font-bold">
-                                JPEG, PNG, WebP, GIF — {t("maxSize")} 10MB
-                            </p>
-                        </div>
-                    </>
-                )}
+                <AnimatePresence mode="wait">
+                    {uploading ? (
+                        <motion.div
+                            key="uploading"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            className="flex flex-col items-center gap-4"
+                        >
+                            <div className="relative">
+                                <Loader2 className="animate-spin text-yellow-500" size={48} />
+                                <div className="absolute inset-0 blur-xl bg-yellow-500/20 animate-pulse" />
+                            </div>
+                            <p className="text-xs font-black text-slate-500 uppercase tracking-[0.2em]">{t("uploading")}</p>
+                        </motion.div>
+                    ) : (
+                        <motion.div
+                            key="idle"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="flex flex-col items-center gap-4"
+                        >
+                            <div className={`w-16 h-16 rounded-[1.5rem] flex items-center justify-center transition-all duration-500 ${dragOver ? "bg-yellow-500 text-white rotate-12" : "bg-slate-100 dark:bg-white/5 text-slate-400"}`}>
+                                <Upload size={28} />
+                            </div>
+                            <div className="space-y-2">
+                                <p className="text-sm font-black text-slate-900 dark:text-white tracking-tight uppercase">
+                                    {t("dragDrop")}
+                                </p>
+                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-loose">
+                                    JPEG, PNG, WebP, GIF<br />
+                                    {t("maxSize")} 10MB
+                                </p>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
                 <input
                     ref={fileInputRef}
                     type="file"
@@ -172,48 +192,66 @@ export default function ImageUploader({ value, onChange, folder = "yemen_student
                     onChange={handleFileChange}
                     className="hidden"
                 />
+            </motion.div>
+
+            {/* Paste URL Option */}
+            <div className="px-2">
+                {!showUrlInput ? (
+                    <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        type="button"
+                        onClick={() => setShowUrlInput(true)}
+                        className="flex items-center gap-2 text-[10px] text-slate-400 hover:text-yellow-600 font-black uppercase tracking-[0.15em] transition-colors mx-auto"
+                    >
+                        <Link2 size={12} />
+                        {t("orPasteUrl")}
+                    </motion.button>
+                ) : (
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="flex gap-2 p-1 bg-slate-100/50 dark:bg-white/5 rounded-2xl border border-slate-200/50 dark:border-white/5"
+                    >
+                        <input
+                            value={urlInput}
+                            onChange={(e) => setUrlInput(e.target.value)}
+                            placeholder="https://..."
+                            className="flex-1 h-12 bg-transparent px-4 text-xs font-bold text-slate-900 dark:text-white outline-none placeholder:text-slate-400"
+                            onKeyDown={(e) => e.key === "Enter" && handleUrlSubmit()}
+                            dir="ltr"
+                        />
+                        <button
+                            type="button"
+                            onClick={handleUrlSubmit}
+                            className="h-10 px-6 bg-slate-900 dark:bg-yellow-500 text-white dark:text-black rounded-xl text-[10px] font-black uppercase tracking-widest transition-all hover:shadow-lg active:scale-95"
+                        >
+                            {tf("confirm")}
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => { setShowUrlInput(false); setUrlInput(""); }}
+                            className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-red-500 transition-colors"
+                        >
+                            <X size={16} />
+                        </button>
+                    </motion.div>
+                )}
             </div>
 
-            {/* خيار لصق رابط */}
-            {!showUrlInput ? (
-                <button
-                    type="button"
-                    onClick={() => setShowUrlInput(true)}
-                    className="flex items-center gap-2 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 font-bold transition-colors mx-auto"
-                >
-                    <Link2 size={12} />
-                    {t("orPasteUrl")}
-                </button>
-            ) : (
-                <div className="flex gap-2">
-                    <input
-                        value={urlInput}
-                        onChange={(e) => setUrlInput(e.target.value)}
-                        placeholder="https://..."
-                        className="flex-1 h-10 px-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-yellow-500/20"
-                        onKeyDown={(e) => e.key === "Enter" && handleUrlSubmit()}
-                    />
-                    <button
-                        type="button"
-                        onClick={handleUrlSubmit}
-                        className="h-10 px-4 bg-yellow-500 hover:bg-yellow-400 text-black rounded-xl text-sm font-bold transition-colors"
+            {/* Error Message */}
+            <AnimatePresence>
+                {error && (
+                    <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
                     >
-                        ✓
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => { setShowUrlInput(false); setUrlInput(""); }}
-                        className="h-10 px-3 bg-slate-100 dark:bg-slate-800 text-slate-500 rounded-xl text-sm hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
-                    >
-                        <X size={14} />
-                    </button>
-                </div>
-            )}
-
-            {/* رسالة خطأ */}
-            {error && (
-                <p className="text-xs text-red-500 font-bold text-center">{error}</p>
-            )}
+                        <p className="text-[10px] text-red-500 font-black uppercase tracking-widest text-center pt-2">
+                            {error}
+                        </p>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

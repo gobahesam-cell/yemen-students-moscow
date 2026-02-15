@@ -2,6 +2,7 @@
 
 import { ChartCard, SimpleBarChart, SimpleLineChart, SimpleDonutChart } from "./Charts";
 import { useTranslations } from "next-intl";
+import { TrendingUp } from "lucide-react";
 
 interface ChartsSectionProps {
     stats: {
@@ -32,11 +33,11 @@ export function ChartsSection({ stats }: ChartsSectionProps) {
     ];
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
             {/* Weekly Trend */}
             <ChartCard title={c("weeklyTitle")} subtitle={c("weeklySubtitle")}>
-                <SimpleLineChart data={weeklyData} color="#3b82f6" height={140} />
-                <div className="flex justify-between mt-4 text-xs text-slate-400">
+                <SimpleLineChart data={weeklyData} color="#3b82f6" height={160} />
+                <div className="flex justify-between mt-8 text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">
                     <span>{c("sat")}</span>
                     <span>{c("sun")}</span>
                     <span>{c("mon")}</span>
@@ -49,7 +50,7 @@ export function ChartsSection({ stats }: ChartsSectionProps) {
 
             {/* Status Distribution */}
             <ChartCard title={c("statusTitle")} subtitle={c("statusSubtitle")}>
-                <SimpleDonutChart data={statusData} />
+                <SimpleDonutChart data={statusData} size={180} />
             </ChartCard>
 
             {/* Categories */}
@@ -59,13 +60,17 @@ export function ChartsSection({ stats }: ChartsSectionProps) {
 
             {/* Growth Stats */}
             <ChartCard title={c("growthTitle")} subtitle={c("growthSubtitle")}>
-                <SimpleLineChart data={[5, 8, 12, 10, 15, 18, stats.usersCount]} color="#10b981" height={140} />
-                <div className="flex items-center justify-between mt-4 p-3 bg-green-50 dark:bg-green-500/10 rounded-xl">
-                    <span className="text-sm text-green-700 dark:text-green-400">{c("growthRate")}</span>
-                    <span className="text-lg font-bold text-green-600 dark:text-green-400">+24%</span>
+                <SimpleLineChart data={[5, 8, 12, 10, 15, 18, stats.usersCount]} color="#10b981" height={160} />
+                <div className="flex items-center justify-between mt-10 p-6 bg-emerald-500/5 dark:bg-emerald-500/10 rounded-[2rem] border border-emerald-500/20 shadow-inner">
+                    <div className="flex flex-col">
+                        <span className="text-[10px] font-black text-emerald-600/50 dark:text-emerald-400/50 uppercase tracking-[0.2em] leading-none mb-2">{c("growthRate")}</span>
+                        <div className="text-3xl font-black text-emerald-500 tracking-tighter leading-none">+24%</div>
+                    </div>
+                    <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 flex items-center justify-center">
+                        <TrendingUp size={24} className="text-emerald-500" />
+                    </div>
                 </div>
             </ChartCard>
         </div>
     );
 }
-

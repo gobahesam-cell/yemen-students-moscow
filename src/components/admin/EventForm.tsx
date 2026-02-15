@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { AdminCard } from "./AdminCard";
-import { Calendar, MapPin, Image as ImageIcon, Type, AlignLeft, Info, Loader2, Users, Sparkles, Globe, AlertCircle } from "lucide-react";
+import { Calendar, MapPin, Image as ImageIcon, Type, AlignLeft, Info, Loader2, Users, Sparkles, Globe, AlertCircle, ArrowRight, Save } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
@@ -121,290 +121,301 @@ export function EventForm({ initialData, mode }: EventFormProps) {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-6">
-
-                {/* Error Box */}
-                <AnimatePresence>
-                    {errorMessage && (
-                        <motion.div
-                            initial={{ opacity: 0, y: -10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            className="p-4 bg-rose-50 dark:bg-rose-500/10 border border-rose-100 dark:border-rose-500/20 rounded-2xl flex items-center gap-3 text-rose-600 dark:text-rose-400 font-bold text-sm"
-                        >
-                            <AlertCircle size={20} />
-                            {errorMessage}
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-
-                {/* Language Tabs */}
-                <div className="flex bg-slate-100 dark:bg-slate-800 p-1.5 rounded-2xl w-fit">
-                    <button
+        <form onSubmit={handleSubmit} className="space-y-10 pb-20">
+            {/* Sticky Header with Glassmorphism */}
+            <div className="flex items-center justify-between gap-4 sticky top-0 z-40 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-xl py-6 border-b border-slate-200/50 dark:border-white/5 -mx-4 px-4 sm:mx-0 sm:px-0">
+                <div className="flex items-center gap-4">
+                    <motion.button
+                        whileTap={{ scale: 0.9 }}
                         type="button"
-                        onClick={() => setActiveTab("ar")}
-                        className={`px-6 py-2.5 rounded-xl text-sm font-black transition-all flex items-center gap-2 ${activeTab === "ar" ? "bg-white dark:bg-slate-700 text-yellow-600 shadow-sm" : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"}`}
+                        onClick={() => router.back()}
+                        className="w-12 h-12 flex items-center justify-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-2xl text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors shadow-sm"
                     >
-                        <Globe size={16} />
-                        {tf("arabic")}
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => setActiveTab("ru")}
-                        className={`px-6 py-2.5 rounded-xl text-sm font-black transition-all flex items-center gap-2 ${activeTab === "ru" ? "bg-white dark:bg-slate-700 text-yellow-600 shadow-sm" : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"}`}
-                    >
-                        <Globe size={16} />
-                        {tf("russian")}
-                    </button>
+                        <ArrowRight size={24} className={activeTab === 'ar' ? 'rotate-0' : 'rotate-180'} />
+                    </motion.button>
+                    <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight hidden sm:block">
+                        {mode === "create" ? t("publishEvent") : t("editEvent")}
+                    </h2>
                 </div>
 
-                <AnimatePresence mode="wait">
-                    {activeTab === "ar" ? (
-                        <motion.div
-                            key="ar-fields"
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: 10 }}
-                            className="space-y-6"
-                        >
-                            <AdminCard title={t("arTitle")}>
-                                <div className="space-y-6">
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-black flex items-center justify-between">
-                                            <span className="flex items-center gap-2">
-                                                <Type size={16} className="text-yellow-600" />
-                                                {t("eventTitle")}
-                                            </span>
-                                            <button
-                                                type="button"
-                                                onClick={() => setShowAiModal(true)}
-                                                className="text-[10px] bg-gradient-to-r from-purple-600 to-blue-600 text-white px-3 py-1.5 rounded-lg flex items-center gap-1.5 hover:scale-105 transition-all shadow-lg shadow-purple-500/10"
-                                            >
-                                                <Sparkles size={12} />
-                                                {t("aiGenerate")}
-                                            </button>
-                                        </label>
-                                        <input
-                                            value={formData.titleAr}
-                                            onChange={e => setFormData({ ...formData, titleAr: e.target.value })}
-                                            className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-yellow-500 transition-all font-bold"
-                                            placeholder={t("eventTitlePlaceholder")}
-                                            dir="rtl"
-                                        />
-                                    </div>
+                <div className="flex items-center gap-3">
+                    <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        type="button"
+                        onClick={() => setShowAiModal(true)}
+                        className="hidden sm:flex items-center gap-2 bg-purple-600/10 hover:bg-purple-600/20 text-purple-600 px-6 py-4 rounded-[1.5rem] font-black text-xs uppercase tracking-widest transition-all"
+                    >
+                        <Sparkles size={16} />
+                        {t("aiGenerate")}
+                    </motion.button>
 
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-black flex items-center gap-2">
-                                            <AlignLeft size={16} className="text-blue-600" />
-                                            {t("eventDesc")}
-                                        </label>
-                                        <textarea
-                                            rows={8}
-                                            value={formData.descriptionAr}
-                                            onChange={e => setFormData({ ...formData, descriptionAr: e.target.value })}
-                                            className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-yellow-500 transition-all resize-none font-medium"
-                                            placeholder={t("eventDescPlaceholder")}
-                                            dir="rtl"
-                                        />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-black flex items-center gap-2">
-                                            <MapPin size={16} className="text-rose-600" />
-                                            {t("locationAr")}
-                                        </label>
-                                        <input
-                                            value={formData.locationAr}
-                                            onChange={e => setFormData({ ...formData, locationAr: e.target.value })}
-                                            className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-yellow-500 transition-all"
-                                            placeholder={t("locationArPlaceholder")}
-                                            dir="rtl"
-                                        />
-                                    </div>
-                                </div>
-                            </AdminCard>
-                        </motion.div>
-                    ) : (
-                        <motion.div
-                            key="ru-fields"
-                            initial={{ opacity: 0, x: 10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -10 }}
-                            className="space-y-6"
-                        >
-                            <AdminCard title={t("ruTitle")}>
-                                <div className="space-y-6">
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-black flex items-center gap-2">
-                                            <Type size={16} className="text-yellow-600" />
-                                            {t("eventTitleRu")}
-                                        </label>
-                                        <input
-                                            value={formData.titleRu}
-                                            onChange={e => setFormData({ ...formData, titleRu: e.target.value })}
-                                            className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-yellow-500 transition-all font-bold"
-                                            placeholder={t("eventTitleRuPlaceholder")}
-                                            dir="ltr"
-                                        />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-black flex items-center gap-2">
-                                            <AlignLeft size={16} className="text-blue-600" />
-                                            {t("eventDescRu")}
-                                        </label>
-                                        <textarea
-                                            rows={8}
-                                            value={formData.descriptionRu}
-                                            onChange={e => setFormData({ ...formData, descriptionRu: e.target.value })}
-                                            className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-yellow-500 transition-all resize-none font-medium"
-                                            placeholder={t("eventDescRuPlaceholder")}
-                                            dir="ltr"
-                                        />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-black flex items-center gap-2">
-                                            <MapPin size={16} className="text-rose-600" />
-                                            {t("locationRu")}
-                                        </label>
-                                        <input
-                                            value={formData.locationRu}
-                                            onChange={e => setFormData({ ...formData, locationRu: e.target.value })}
-                                            className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-yellow-500 transition-all font-bold"
-                                            placeholder={t("locationRuPlaceholder")}
-                                            dir="ltr"
-                                        />
-                                    </div>
-                                </div>
-                            </AdminCard>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-
-                <AdminCard title={t("timing")}>
-                    <div className="space-y-2">
-                        <label className="text-sm font-black flex items-center gap-2">
-                            <Calendar size={16} className="text-emerald-600" />
-                            {t("dateTime")}
-                        </label>
-                        <input
-                            type="datetime-local"
-                            value={formData.date}
-                            onChange={e => setFormData({ ...formData, date: e.target.value })}
-                            className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-yellow-500 transition-all font-bold"
-                        />
-                    </div>
-                </AdminCard>
+                    <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        type="submit"
+                        disabled={loading}
+                        className="group flex items-center gap-3 bg-slate-900 dark:bg-emerald-500 text-white dark:text-black px-8 py-4 rounded-[1.5rem] font-black text-sm hover:shadow-xl hover:shadow-emerald-500/10 transition-all disabled:opacity-50"
+                    >
+                        {loading ? <Loader2 className="animate-spin" size={20} /> : <Calendar size={20} className="group-hover:rotate-12 transition-transform" />}
+                        <span className="uppercase tracking-widest">{mode === "create" ? t("publishEvent") : t("saveChanges")}</span>
+                    </motion.button>
+                </div>
             </div>
 
-            <div className="space-y-6">
-                <AdminCard title={t("settingsMedia")}>
-                    <div className="space-y-6">
-                        <ImageUploader
-                            value={formData.image}
-                            onChange={(url) => setFormData({ ...formData, image: url })}
-                            folder="yemen_students/events"
-                        />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                <div className="lg:col-span-2 space-y-10">
+                    {/* Error Box */}
+                    <AnimatePresence>
+                        {errorMessage && (
+                            <motion.div
+                                initial={{ opacity: 0, y: -20, scale: 0.95 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                                className="p-6 bg-rose-500/10 border border-rose-500/20 rounded-[2rem] flex items-center gap-4 text-rose-500 font-bold"
+                            >
+                                <div className="w-10 h-10 rounded-xl bg-rose-500/20 flex items-center justify-center shrink-0">
+                                    <AlertCircle size={20} />
+                                </div>
+                                <p className="text-sm leading-relaxed">{errorMessage}</p>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
-                        <div className="space-y-2">
-                            <label className="text-sm font-black flex items-center gap-2">
-                                <Users size={16} className="text-purple-600" />
-                                {t("maxCapacity")}
-                            </label>
-                            <input
-                                type="number"
-                                value={formData.capacity}
-                                onChange={e => setFormData({ ...formData, capacity: parseInt(e.target.value) || 0 })}
-                                className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-yellow-500 transition-all font-bold"
-                                placeholder={t("unlimitedPlaceholder")}
-                            />
-                            <p className="text-[10px] text-slate-500 flex items-center gap-1 font-bold">
-                                <Info size={12} />
-                                {t("unlimitedHint")}
-                            </p>
+                    {/* Language Tabs & AI Shortcut */}
+                    <div className="flex flex-wrap items-center justify-between gap-6">
+                        <div className="inline-flex p-1.5 bg-slate-200/50 dark:bg-white/5 rounded-[1.5rem] relative">
+                            <motion.button
+                                type="button"
+                                onClick={() => setActiveTab("ar")}
+                                className={`relative z-10 flex items-center gap-2 px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-colors ${activeTab === "ar" ? "text-slate-900 dark:text-white" : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"}`}
+                            >
+                                {activeTab === "ar" && (
+                                    <motion.div layoutId="activeTabEvent" className="absolute inset-0 bg-white dark:bg-slate-800 rounded-2xl shadow-sm -z-10" />
+                                )}
+                                <Globe size={14} />
+                                {tf("arabic")}
+                            </motion.button>
+                            <motion.button
+                                type="button"
+                                onClick={() => setActiveTab("ru")}
+                                className={`relative z-10 flex items-center gap-2 px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-colors ${activeTab === "ru" ? "text-slate-900 dark:text-white" : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"}`}
+                            >
+                                {activeTab === "ru" && (
+                                    <motion.div layoutId="activeTabEvent" className="absolute inset-0 bg-white dark:bg-slate-800 rounded-2xl shadow-sm -z-10" />
+                                )}
+                                <Globe size={14} />
+                                {tf("russian")}
+                            </motion.button>
                         </div>
-
-                        <hr className="border-slate-100 dark:border-slate-800" />
 
                         <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full h-14 bg-gradient-to-r from-yellow-500 to-amber-500 hover:scale-[1.02] active:scale-[0.98] text-black font-black rounded-2xl transition-all shadow-xl shadow-yellow-500/20 flex items-center justify-center gap-3"
+                            type="button"
+                            onClick={() => setShowAiModal(true)}
+                            className="sm:hidden flex items-center gap-2 text-purple-600 font-black text-[10px] uppercase tracking-widest"
                         >
-                            {loading ? <Loader2 className="animate-spin" size={20} /> : (
-                                <>
-                                    <ImageIcon size={20} />
-                                    {mode === "create" ? t("publishEvent") : t("saveChanges")}
-                                </>
-                            )}
+                            <Sparkles size={14} />
+                            {t("aiGenerate")}
                         </button>
                     </div>
-                </AdminCard>
 
-                {/* Info Card */}
-                <AdminCard className="bg-blue-50/50 dark:bg-blue-500/5 border-blue-100 dark:border-blue-500/20">
-                    <div className="flex gap-4">
-                        <div className="p-2 bg-blue-500/10 rounded-lg h-fit text-blue-600">
-                            <Info size={20} />
-                        </div>
-                        <div className="space-y-1">
-                            <h4 className="text-sm font-black text-blue-900 dark:text-blue-100">{t("tipTitle")}</h4>
-                            <p className="text-xs text-blue-700/70 dark:text-blue-300/60 leading-relaxed font-bold">
-                                {t("tipDesc")}
-                            </p>
-                        </div>
-                    </div>
-                </AdminCard>
-            </div>
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={activeTab}
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -20 }}
+                            transition={{ duration: 0.3 }}
+                            className="space-y-8"
+                        >
+                            <AdminCard delay={0.1}>
+                                <div className="space-y-8">
+                                    <div className="space-y-3">
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-1 flex items-center gap-2">
+                                            <Type size={14} className="text-yellow-500" />
+                                            {activeTab === 'ar' ? t("eventTitle") : t("eventTitleRu")}
+                                        </label>
+                                        <input
+                                            value={activeTab === 'ar' ? formData.titleAr : formData.titleRu}
+                                            onChange={e => setFormData({ ...formData, [activeTab === 'ar' ? 'titleAr' : 'titleRu']: e.target.value })}
+                                            className={`w-full bg-slate-100/50 dark:bg-white/5 border-2 border-transparent focus:border-yellow-500/20 rounded-2xl p-5 text-xl font-black text-slate-900 dark:text-white outline-none transition-all placeholder:text-slate-400 ${activeTab === 'ru' ? 'text-left' : ''}`}
+                                            dir={activeTab === 'ar' ? 'rtl' : 'ltr'}
+                                            placeholder={activeTab === 'ar' ? t("eventTitlePlaceholder") : t("eventTitleRuPlaceholder")}
+                                        />
+                                    </div>
 
-            {/* AI Assistant Modal */}
-            {showAiModal && (
-                <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[100] flex items-center justify-center p-4">
+                                    <div className="space-y-3">
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-1 flex items-center gap-2">
+                                            <AlignLeft size={14} className="text-blue-500" />
+                                            {activeTab === 'ar' ? t("eventDesc") : t("eventDescRu")}
+                                        </label>
+                                        <textarea
+                                            rows={12}
+                                            value={activeTab === 'ar' ? formData.descriptionAr : formData.descriptionRu}
+                                            onChange={e => setFormData({ ...formData, [activeTab === 'ar' ? 'descriptionAr' : 'descriptionRu']: e.target.value })}
+                                            className={`w-full bg-slate-100/50 dark:bg-white/5 border-2 border-transparent focus:border-yellow-500/20 rounded-2xl p-5 text-lg font-medium leading-relaxed text-slate-700 dark:text-slate-300 outline-none transition-all resize-none placeholder:text-slate-400 ${activeTab === 'ru' ? 'text-left' : ''}`}
+                                            dir={activeTab === 'ar' ? 'rtl' : 'ltr'}
+                                            placeholder={activeTab === 'ar' ? t("eventDescPlaceholder") : t("eventDescRuPlaceholder")}
+                                        />
+                                    </div>
+
+                                    <div className="space-y-3">
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-1 flex items-center gap-2">
+                                            <MapPin size={14} className="text-rose-500" />
+                                            {activeTab === 'ar' ? t("locationAr") : t("locationRu")}
+                                        </label>
+                                        <input
+                                            value={activeTab === 'ar' ? formData.locationAr : formData.locationRu}
+                                            onChange={e => setFormData({ ...formData, [activeTab === 'ar' ? 'locationAr' : 'locationRu']: e.target.value })}
+                                            className={`w-full bg-slate-100/50 dark:bg-white/5 border-2 border-transparent focus:border-yellow-500/20 rounded-2xl p-5 text-lg font-black text-slate-900 dark:text-white outline-none transition-all placeholder:text-slate-400 ${activeTab === 'ru' ? 'text-left' : ''}`}
+                                            dir={activeTab === 'ar' ? 'rtl' : 'ltr'}
+                                            placeholder={activeTab === 'ar' ? t("locationArPlaceholder") : t("locationRuPlaceholder")}
+                                        />
+                                    </div>
+                                </div>
+                            </AdminCard>
+                        </motion.div>
+                    </AnimatePresence>
+                </div>
+
+                <div className="space-y-10">
+                    <AdminCard title={t("timing")}>
+                        <div className="space-y-4">
+                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-1 flex items-center gap-2">
+                                <Calendar size={14} className="text-emerald-500" />
+                                {t("dateTime")}
+                            </label>
+                            <input
+                                type="datetime-local"
+                                value={formData.date}
+                                onChange={e => setFormData({ ...formData, date: e.target.value })}
+                                className="w-full bg-slate-100/50 dark:bg-white/5 border-2 border-transparent focus:border-yellow-500/20 rounded-2xl p-4 text-sm font-black text-slate-900 dark:text-white outline-none transition-all"
+                            />
+                        </div>
+                    </AdminCard>
+
+                    <AdminCard title={t("settingsMedia")}>
+                        <div className="space-y-8">
+                            <div className="p-2 bg-slate-100/50 dark:bg-white/5 rounded-[2rem] border-2 border-dashed border-slate-200 dark:border-white/10">
+                                <ImageUploader
+                                    value={formData.image}
+                                    onChange={(url) => setFormData({ ...formData, image: url })}
+                                    folder="yemen_students/events"
+                                />
+                            </div>
+
+                            <div className="space-y-4">
+                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-1 flex items-center gap-2">
+                                    <Users size={14} className="text-purple-500" />
+                                    {t("maxCapacity")}
+                                </label>
+                                <input
+                                    type="number"
+                                    value={formData.capacity}
+                                    onChange={e => setFormData({ ...formData, capacity: parseInt(e.target.value) || 0 })}
+                                    className="w-full bg-slate-100/50 dark:bg-white/5 border-2 border-transparent focus:border-yellow-500/20 rounded-2xl p-4 text-sm font-black text-slate-900 dark:text-white outline-none transition-all"
+                                    placeholder={t("unlimitedPlaceholder")}
+                                />
+                                <div className="flex items-center gap-2 p-3 bg-slate-50 dark:bg-white/5 rounded-xl border border-slate-200/50 dark:border-white/5">
+                                    <Info size={14} className="text-slate-400" />
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider leading-tight">
+                                        {t("unlimitedHint")}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </AdminCard>
+
+                    {/* Tip Card */}
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="bg-white dark:bg-slate-900 w-full max-w-lg rounded-[2.5rem] p-8 shadow-2xl border border-white/10"
+                        whileHover={{ y: -5 }}
+                        className="bg-blue-600/5 dark:bg-blue-500/5 border border-blue-600/10 dark:border-blue-500/20 rounded-[2rem] p-8 shadow-sm"
                     >
-                        <div className="flex items-center gap-4 mb-6">
-                            <div className="w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center text-purple-600">
-                                <Sparkles size={24} />
+                        <div className="flex gap-4">
+                            <div className="w-12 h-12 rounded-2xl bg-blue-600/10 flex items-center justify-center shrink-0 text-blue-600 shadow-sm shadow-blue-600/5">
+                                <Sparkles size={20} />
                             </div>
-                            <div>
-                                <h3 className="text-xl font-black text-slate-900 dark:text-white">{t("aiTitle")}</h3>
-                                <p className="text-sm text-slate-500">{t("aiDesc")}</p>
+                            <div className="space-y-2">
+                                <h4 className="text-sm font-black text-blue-900 dark:text-blue-100 uppercase tracking-widest">{t("tipTitle")}</h4>
+                                <p className="text-xs text-blue-700/80 dark:text-blue-300/60 leading-relaxed font-bold">
+                                    {t("tipDesc")}
+                                </p>
                             </div>
-                        </div>
-
-                        <textarea
-                            value={aiPrompt}
-                            onChange={(e) => setAiPrompt(e.target.value)}
-                            placeholder={t("aiPlaceholder")}
-                            className="w-full min-h-[150px] p-5 rounded-3xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none focus:ring-4 focus:ring-purple-500/10 transition-all mb-6 font-bold resize-none"
-                        />
-
-                        <div className="flex gap-3">
-                            <button
-                                type="button"
-                                onClick={handleAiGenerate}
-                                disabled={aiLoading || !aiPrompt}
-                                className="flex-1 h-14 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-2xl font-black flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
-                            >
-                                {aiLoading ? <Loader2 className="animate-spin" /> : <Sparkles size={20} />}
-                                {t("aiBilingual")}
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setShowAiModal(false)}
-                                className="px-6 h-14 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-2xl font-black hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
-                            >
-                                {tf("cancel")}
-                            </button>
                         </div>
                     </motion.div>
                 </div>
-            )}
+            </div>
+
+            {/* AI Assistant Modal: Premium Redesign */}
+            <AnimatePresence>
+                {showAiModal && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setShowAiModal(false)}
+                            className="fixed inset-0 bg-slate-950/80 backdrop-blur-xl"
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9, y: 40 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 40 }}
+                            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                            className="relative bg-white dark:bg-slate-950 w-full max-w-xl rounded-[3rem] p-10 shadow-[0_32px_128px_-16px_rgba(0,0,0,0.5)] border border-white/10 overflow-hidden group"
+                        >
+                            {/* Accent Gradients */}
+                            <div className="absolute -right-20 -top-20 w-64 h-64 bg-purple-600/10 blur-[80px] rounded-full pointer-events-none" />
+                            <div className="absolute -left-20 -bottom-20 w-64 h-64 bg-blue-600/10 blur-[80px] rounded-full pointer-events-none" />
+
+                            <div className="relative">
+                                <div className="flex items-center gap-6 mb-10">
+                                    <div className="w-20 h-20 rounded-[2rem] bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center text-white shadow-2xl shadow-purple-500/20 group-hover:rotate-6 transition-transform duration-500">
+                                        <Sparkles size={36} />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight mb-1">{t("aiTitle")}</h3>
+                                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{t("aiDesc")}</p>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4 mb-10">
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Describe your event (Ar or Ru)</label>
+                                    <textarea
+                                        value={aiPrompt}
+                                        onChange={(e) => setAiPrompt(e.target.value)}
+                                        placeholder={t("aiPlaceholder")}
+                                        className="w-full min-h-[200px] p-6 rounded-[2rem] bg-slate-50 dark:bg-white/5 border-2 border-transparent focus:border-purple-500/20 text-slate-900 dark:text-white outline-none transition-all font-bold resize-none leading-relaxed"
+                                    />
+                                </div>
+
+                                <div className="flex flex-col sm:flex-row gap-4">
+                                    <motion.button
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
+                                        type="button"
+                                        onClick={handleAiGenerate}
+                                        disabled={aiLoading || !aiPrompt}
+                                        className="flex-1 h-16 bg-slate-900 dark:bg-white text-white dark:text-black rounded-2xl font-black flex items-center justify-center gap-3 hover:shadow-2xl transition-all disabled:opacity-50"
+                                    >
+                                        {aiLoading ? <Loader2 className="animate-spin" /> : <Sparkles size={20} />}
+                                        <span className="uppercase tracking-[0.15em] text-xs font-black">{t("aiBilingual")}</span>
+                                    </motion.button>
+                                    <motion.button
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
+                                        type="button"
+                                        onClick={() => setShowAiModal(false)}
+                                        className="px-10 h-16 bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 rounded-2xl font-black hover:bg-slate-200 dark:hover:bg-white/10 transition-all uppercase tracking-[0.15em] text-xs font-black"
+                                    >
+                                        {tf("cancel")}
+                                    </motion.button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </form>
     );
 }

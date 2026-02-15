@@ -86,7 +86,7 @@ export function StatsGrid({ stats, userRole = "ADMIN" }: StatsGridProps) {
         <motion.div
             initial="hidden"
             animate="show"
-            className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 lg:gap-10"
         >
             {filteredCards.map((card, index) => (
                 <StatCard

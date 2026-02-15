@@ -5,6 +5,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useTranslations, useLocale } from "next-intl";
+import { motion, AnimatePresence } from "framer-motion";
 import ThemeToggle from "@/components/ThemeToggle";
 import LocaleSwitcherIcon from "@/components/LocaleSwitcherIcon";
 import {
@@ -21,6 +22,7 @@ import {
     Search
 } from "lucide-react";
 import { logoutAction } from "@/app/actions/auth";
+import { AdminSearch } from "./AdminSearch";
 
 const NAV_ITEMS = [
     { href: "/admin", labelKey: "nav.home", icon: LayoutDashboard },
@@ -54,157 +56,215 @@ export function AdminLayoutClient({
         return pathname.startsWith(href);
     };
 
-    // ✅ فلترة العناصر بناءً على الرتبة
     const filteredItems = NAV_ITEMS.filter(item => {
         if (user?.role === "ADMIN") return true;
-
         if (user?.role === "EDITOR") {
-            const allowed = ["/admin", "/admin/posts", "/admin/events", "/admin/media", "/admin/settings"];
-            return allowed.includes(item.href);
+            return ["/admin", "/admin/posts", "/admin/events", "/admin/media", "/admin/settings"].includes(item.href);
         }
-
         if (user?.role === "INSTRUCTOR") {
-            const allowed = ["/admin", "/admin/courses", "/admin/media", "/admin/settings"];
-            return allowed.includes(item.href);
+            return ["/admin", "/admin/courses", "/admin/media", "/admin/settings"].includes(item.href);
         }
-
-        // للمستخدم العادي (MEMBER)
         return item.href === "/admin" || item.href === "/admin/settings";
     });
 
     if (!mounted) {
-        return <div className="min-h-screen bg-slate-100 dark:bg-slate-950" />;
+        return <div className="min-h-screen bg-slate-50 dark:bg-slate-950" />;
     }
 
     return (
-        <div className="flex min-h-screen bg-slate-100 dark:bg-slate-950" dir={isRTL ? "rtl" : "ltr"}>
+        <div className="flex min-h-screen bg-slate-50 dark:bg-[#050505] text-slate-900 dark:text-slate-100 selection:bg-yellow-500/30" dir={isRTL ? "rtl" : "ltr"}>
 
-            {/* ===== SIDEBAR ===== */}
-            <aside className={`
-                fixed inset-y-0 ${isRTL ? 'right-0' : 'left-0'} z-50 w-64 
-                bg-white dark:bg-slate-900 
-                border-slate-200 dark:border-slate-800
-                ${isRTL ? 'border-l' : 'border-r'}
-                transform transition-transform duration-300 ease-in-out
-                ${sidebarOpen ? 'translate-x-0' : (isRTL ? 'translate-x-full' : '-translate-x-full')}
-                lg:translate-x-0 lg:static lg:inset-auto
-            `}>
-                {/* Logo */}
-                <div className="h-16 flex items-center justify-between px-4 border-b border-slate-100 dark:border-slate-800">
-                    <Link href="/" className="flex items-center gap-2">
-                        <div className="w-8 h-8 relative">
-                            <Image src="/logo.png" alt="Logo" fill className="object-contain" />
-                        </div>
-                        <span className="font-bold text-slate-900 dark:text-white">
-                            YSM<span className="text-yellow-500">Panel</span>
-                        </span>
-                    </Link>
-                    <button
-                        onClick={() => setSidebarOpen(false)}
-                        className="lg:hidden p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            {/* Background Gradient Orbs */}
+            <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-yellow-500/5 dark:bg-yellow-500/10 rounded-full blur-[120px]" />
+                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-[120px]" />
+            </div>
+
+            {/* ===== FLOATING SIDEBAR ===== */}
+            <AnimatePresence mode="wait">
+                {(sidebarOpen || (typeof window !== 'undefined' && window.innerWidth >= 1024)) && (
+                    <motion.aside
+                        initial={{ x: isRTL ? 300 : -300, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        exit={{ x: isRTL ? 300 : -300, opacity: 0 }}
+                        transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                        className={`
+                            fixed inset-y-4 ${isRTL ? 'right-4' : 'left-4'} z-50 w-64 
+                            bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl
+                            border border-slate-200/50 dark:border-white/5 shadow-2xl shadow-black/5
+                            rounded-[2rem] flex flex-col overflow-hidden
+                            lg:sticky lg:top-4 lg:left-auto lg:right-auto lg:h-[calc(100vh-2rem)] lg:my-4 lg:mx-4
+                        `}
                     >
-                        <X size={20} />
-                    </button>
-                </div>
-
-                {/* Navigation */}
-                <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
-                    {filteredItems.map((item) => {
-                        const Icon = item.icon;
-                        const active = isActive(item.href);
-                        return (
-                            <Link
-                                key={item.href}
-                                href={item.href}
-                                className={`
-                                    flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
-                                    transition-all duration-200
-                                    ${active
-                                        ? "bg-slate-900 dark:bg-yellow-500 text-white dark:text-black shadow-lg shadow-black/10"
-                                        : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
-                                    }
-                                `}
-                            >
-                                <Icon size={18} />
-                                <span>{t(item.labelKey as any)}</span>
+                        {/* Logo Area */}
+                        <div className="p-6 flex items-center justify-between border-b border-slate-100 dark:border-white/5">
+                            <Link href="/" className="flex items-center gap-3 group">
+                                <div className="w-10 h-10 relative bg-yellow-500 rounded-2xl flex items-center justify-center overflow-hidden shadow-lg shadow-yellow-500/20 group-hover:rotate-12 transition-transform duration-300">
+                                    <Image src="/logo.png" alt="Logo" width={24} height={24} className="object-contain invert brightness-0" />
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="font-black text-lg leading-tight tracking-tight dark:text-white">
+                                        YSM<span className="text-yellow-500">Panel</span>
+                                    </span>
+                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">Admin Area</span>
+                                </div>
                             </Link>
-                        );
-                    })}
-                </nav>
-
-                {/* User Card */}
-                <div className="p-3 border-t border-slate-100 dark:border-slate-800">
-                    <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center text-white font-bold text-sm shadow-inner">
-                            {user?.name?.[0] || "U"}
+                            <button
+                                onClick={() => setSidebarOpen(false)}
+                                className="lg:hidden p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-colors text-slate-500"
+                            >
+                                <X size={20} />
+                            </button>
                         </div>
-                        <div className="flex-1 min-w-0">
-                            <div className="text-sm font-bold text-slate-900 dark:text-white truncate">
-                                {user?.name || t("dashboard")}
-                            </div>
-                            <div className="text-xs text-slate-500 truncate">
-                                {user?.role === "ADMIN" ? t("nav.role") : user?.role || "Member"}
+
+                        {/* Navigation Scroll Area */}
+                        <nav className="flex-1 p-4 space-y-1.5 overflow-y-auto custom-scrollbar">
+                            {filteredItems.map((item, idx) => {
+                                const Icon = item.icon;
+                                const active = isActive(item.href);
+                                return (
+                                    <motion.div
+                                        key={item.href}
+                                        initial={{ opacity: 0, x: isRTL ? 20 : -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: idx * 0.05 + 0.1 }}
+                                    >
+                                        <Link
+                                            href={item.href}
+                                            className={`
+                                                relative flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold
+                                                transition-all duration-300 group
+                                                ${active
+                                                    ? "bg-slate-900 dark:bg-yellow-500 text-white dark:text-black shadow-xl shadow-yellow-500/10"
+                                                    : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white"
+                                                }
+                                            `}
+                                        >
+                                            <Icon size={20} className={`${active ? "scale-110" : "group-hover:scale-110"} transition-transform`} />
+                                            <span>{t(item.labelKey as any)}</span>
+                                            {active && (
+                                                <motion.div
+                                                    layoutId="activeTab"
+                                                    className={`absolute ${isRTL ? 'left-2' : 'right-2'} w-1.5 h-1.5 bg-yellow-500 dark:bg-black rounded-full`}
+                                                />
+                                            )}
+                                        </Link>
+                                    </motion.div>
+                                );
+                            })}
+                        </nav>
+
+                        {/* User Bottom Section */}
+                        <div className="p-4 mt-auto border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/[0.02]">
+                            <div className="flex items-center gap-3 p-3 rounded-2xl">
+                                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-yellow-500 to-amber-300 flex items-center justify-center text-black font-black text-sm shadow-lg shadow-yellow-500/20">
+                                    {user?.name?.[0] || "U"}
+                                </div>
+                                <div className="flex flex-col min-w-0">
+                                    <div className="text-sm font-black text-slate-900 dark:text-white truncate">
+                                        {user?.name || t("dashboard")}
+                                    </div>
+                                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                        {user?.role === "ADMIN" ? t("nav.role") : (t(`nav.roles.${user?.role}` as any) || user?.role)}
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </aside>
+                    </motion.aside>
+                )}
+            </AnimatePresence>
 
-            {/* Mobile Overlay */}
-            {sidebarOpen && (
-                <div
-                    className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-                    onClick={() => setSidebarOpen(false)}
-                />
-            )}
+            {/* Mobile Sidebar Overlay */}
+            <AnimatePresence>
+                {sidebarOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/40 backdrop-blur-md z-40 lg:hidden"
+                        onClick={() => setSidebarOpen(false)}
+                    />
+                )}
+            </AnimatePresence>
 
-            {/* ===== MAIN CONTENT ===== */}
-            <div className="flex-1 flex flex-col min-w-0">
+            {/* ===== MAIN CONTENT AREA ===== */}
+            <main className="flex-1 flex flex-col min-w-0 relative z-10">
 
-                {/* Header */}
-                <header className="sticky top-0 z-30 h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 flex items-center justify-between gap-4">
-                    {/* Left: Menu + Search */}
-                    <div className="flex items-center gap-3 flex-1">
-                        <button
+                {/* Modern Header */}
+                <header className="h-20 flex items-center justify-between px-6 lg:px-8">
+                    {/* Header Left: Menu Toggle & Title */}
+                    <div className="flex items-center gap-4">
+                        <motion.button
+                            whileTap={{ scale: 0.9 }}
                             onClick={() => setSidebarOpen(true)}
-                            className="lg:hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+                            className="lg:hidden w-12 h-12 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 flex items-center justify-center text-slate-900 dark:text-white shadow-xl shadow-black/5 hover:bg-slate-50 transition-colors"
                         >
-                            <Menu size={20} />
-                        </button>
+                            <Menu size={24} />
+                        </motion.button>
 
-                        <div className="hidden sm:flex items-center flex-1 max-w-md">
-                            <div className="relative w-full">
-                                <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                                <input
-                                    type="text"
-                                    placeholder={t("search")}
-                                    className="w-full h-10 pr-10 pl-4 rounded-xl bg-slate-100 dark:bg-slate-800 border-0 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                                />
-                            </div>
+                        <div className="hidden lg:block">
+                            <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
+                                {t("dashboard")}
+                            </h2>
+                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                                {new Date().toLocaleDateString(locale === 'ar' ? 'ar-YE' : 'ru-RU', { weekday: 'long', day: 'numeric', month: 'long' })}
+                            </p>
                         </div>
                     </div>
 
-                    {/* Right: Actions */}
-                    <div className="flex items-center gap-2">
+                    {/* Integrated Search */}
+                    <AdminSearch />
+
+                    {/* Header Right: Actions */}
+                    <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="flex items-center gap-3 p-1.5 rounded-2xl bg-white/50 dark:bg-slate-900/50 backdrop-blur-lg border border-slate-200/50 dark:border-white/5 shadow-sm"
+                    >
                         <LocaleSwitcherIcon />
+                        <div className="w-px h-6 bg-slate-200 dark:bg-white/10 mx-1" />
                         <ThemeToggle />
-                        <button
+                        <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
                             onClick={() => logoutAction()}
-                            className="hidden sm:flex items-center gap-2 px-3 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg text-sm font-medium transition-colors"
+                            className="flex items-center gap-2 px-4 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 rounded-xl text-xs font-black transition-all"
                         >
-                            <LogOut size={18} />
-                            <span className="hidden md:inline">{t("nav.logout")}</span>
-                        </button>
-                    </div>
+                            <LogOut size={16} />
+                            <span className="hidden sm:inline uppercase tracking-widest">{t("nav.logout")}</span>
+                        </motion.button>
+                    </motion.div>
                 </header>
 
-                {/* Page Content */}
-                <main className="flex-1 p-4 md:p-6 overflow-auto">
-                    <div className="max-w-7xl mx-auto">
+                {/* Main Viewport */}
+                <div className="flex-1 p-6 lg:p-8 overflow-auto">
+                    <motion.div
+                        key={pathname}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4, ease: "easeOut" }}
+                        className="max-w-7xl mx-auto"
+                    >
                         {children}
-                    </div>
-                </main>
-            </div>
+                    </motion.div>
+                </div>
+            </main>
+
+            <style jsx global>{`
+                .custom-scrollbar::-webkit-scrollbar {
+                    width: 4px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-track {
+                    background: transparent;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb {
+                    background: rgba(148, 163, 184, 0.2);
+                    border-radius: 10px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                    background: rgba(148, 163, 184, 0.4);
+                }
+            `}</style>
         </div>
     );
 }
