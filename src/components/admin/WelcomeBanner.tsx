@@ -19,7 +19,7 @@ export function WelcomeBanner({ draftsCount, userName, role = "MEMBER" }: Welcom
             initial={{ opacity: 0, y: -40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-            className="relative overflow-hidden bg-slate-950 rounded-[3rem] lg:rounded-[4rem] p-12 lg:p-16 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)]"
+            className="relative overflow-hidden bg-slate-950 rounded-[2.5rem] lg:rounded-[4rem] p-8 sm:p-12 lg:p-16 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)]"
         >
             {/* Ultra-Premium Gradient Background */}
             <div className="absolute inset-0 pointer-events-none">
@@ -38,11 +38,11 @@ export function WelcomeBanner({ draftsCount, userName, role = "MEMBER" }: Welcom
                         transition={{ delay: 0.4, duration: 0.8 }}
                         className="flex flex-wrap items-center gap-4 mb-8"
                     >
-                        <span className="px-5 py-2 bg-white/10 backdrop-blur-xl border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-[0.25em] text-yellow-500 shadow-2xl">
+                        <span className="px-5 py-2 bg-white/10 backdrop-blur-xl border border-white/10 rounded-2xl text-[9px] sm:text-[10px] font-black uppercase tracking-[0.25em] text-yellow-500 shadow-2xl">
                             ✨ {t("welcome", { name: userName || t("nav.roles.MEMBER") })}
                         </span>
                         {draftsCount > 0 && (
-                            <span className="px-5 py-2 bg-orange-500/10 backdrop-blur-xl border border-orange-500/20 rounded-2xl text-[10px] font-black uppercase tracking-[0.25em] text-orange-400">
+                            <span className="px-5 py-2 bg-orange-500/10 backdrop-blur-xl border border-orange-500/20 rounded-2xl text-[9px] sm:text-[10px] font-black uppercase tracking-[0.25em] text-orange-400">
                                 {draftsCount} {t("stats.drafts")}
                             </span>
                         )}
@@ -52,7 +52,7 @@ export function WelcomeBanner({ draftsCount, userName, role = "MEMBER" }: Welcom
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.5, duration: 0.8 }}
-                        className="text-5xl lg:text-8xl font-black text-white mb-6 tracking-tighter leading-[0.85]"
+                        className="text-4xl sm:text-5xl lg:text-8xl font-black text-white mb-4 sm:mb-6 tracking-tighter leading-[0.9] sm:leading-[0.85]"
                     >
                         {t("dashboard")}<br />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-200 to-yellow-600">
@@ -64,7 +64,7 @@ export function WelcomeBanner({ draftsCount, userName, role = "MEMBER" }: Welcom
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.7, duration: 0.8 }}
-                        className="text-slate-400 text-xl lg:text-2xl font-bold font-medium leading-tight max-w-2xl opacity-80"
+                        className="text-slate-400 text-lg sm:text-xl lg:text-2xl font-bold font-medium leading-tight max-w-2xl opacity-80"
                     >
                         {t("welcomeMsg", { count: draftsCount })}
                     </motion.p>
@@ -80,27 +80,27 @@ export function WelcomeBanner({ draftsCount, userName, role = "MEMBER" }: Welcom
                     <Link
                         href="/admin/posts/new"
                         className="
-                            group relative overflow-hidden flex items-center gap-4 px-12 py-6 
-                            bg-yellow-500 text-black rounded-[2rem] font-black text-xs uppercase tracking-[0.2em]
+                            group relative overflow-hidden flex items-center gap-3 sm:gap-4 px-8 sm:px-12 py-4 sm:py-6 
+                            bg-yellow-500 text-black rounded-[1.5rem] sm:rounded-[2rem] font-black text-[10px] sm:text-xs uppercase tracking-[0.2em]
                             shadow-[0_20px_50px_-10px_rgba(234,179,8,0.4)] transition-all duration-500 
                             hover:-translate-y-2 hover:scale-[1.05] active:scale-95
                         "
                     >
                         <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/40 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
-                        <Plus size={20} className="relative z-10 group-hover:rotate-90 transition-transform duration-500" />
+                        <Plus size={18} className="relative z-10 group-hover:rotate-90 transition-transform duration-500" />
                         <span className="relative z-10">{t("banner.newPost")}</span>
                     </Link>
 
                     <Link
                         href="/admin/posts"
                         className="
-                            flex items-center gap-4 px-12 py-6 bg-white/5 backdrop-blur-2xl text-white 
-                            rounded-[2rem] font-black text-xs uppercase tracking-[0.2em] 
+                            flex items-center gap-3 sm:gap-4 px-8 sm:px-12 py-4 sm:py-6 bg-white/5 backdrop-blur-2xl text-white 
+                            rounded-[1.5rem] sm:rounded-[2rem] font-black text-[10px] sm:text-xs uppercase tracking-[0.2em] 
                             hover:bg-white/10 transition-all border border-white/10 group
                             hover:-translate-y-1 active:scale-95
                         "
                     >
-                        <TrendingUp size={20} className="group-hover:translate-y-[-4px] group-hover:translate-x-[4px] transition-transform duration-500" />
+                        <TrendingUp size={18} className="group-hover:translate-y-[-4px] group-hover:translate-x-[4px] transition-transform duration-500" />
                         <span>{t("activity.viewAll")}</span>
                     </Link>
                 </motion.div>

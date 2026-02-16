@@ -53,11 +53,11 @@ export function CourseCard({ course }: CourseCardProps) {
 
     return (
         <motion.div
-            initial={{ opacity: 0, scale: 0.98, y: 20 }}
-            whileInView={{ opacity: 1, scale: 1, y: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="group bg-white/70 dark:bg-slate-900/70 backdrop-blur-2xl rounded-[2rem] border border-slate-200/50 dark:border-white/5 overflow-hidden shadow-[0_20px_50px_-12px_rgba(0,0,0,0.05)] hover:shadow-[0_40px_80px_-15px_rgba(0,0,0,0.1)] transition-all duration-700 hover:-translate-y-2 cursor-pointer"
+            className="group bg-white/70 dark:bg-slate-900/70 backdrop-blur-2xl rounded-[1.5rem] sm:rounded-[2rem] border border-slate-200/50 dark:border-white/5 overflow-hidden shadow-[0_20px_50px_-12px_rgba(0,0,0,0.05)] hover:shadow-[0_40px_80px_-15px_rgba(0,0,0,0.1)] transition-all duration-700 hover:-translate-y-2 cursor-pointer"
         >
             {/* Thumbnail */}
             <div className="relative h-48 bg-slate-900 overflow-hidden">
@@ -84,7 +84,7 @@ export function CourseCard({ course }: CourseCardProps) {
                         <Settings size={18} />
                     </Link>
                     <button
-                        onClick={handleDelete}
+                        onClick={(e) => { e.stopPropagation(); handleDelete(); }}
                         disabled={isDeleting}
                         className="p-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl text-white hover:bg-rose-500 transition-all shadow-2xl disabled:opacity-50"
                     >
@@ -102,30 +102,30 @@ export function CourseCard({ course }: CourseCardProps) {
             </div>
 
             {/* Content */}
-            <div className="p-8">
-                <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-3 line-clamp-1 group-hover:text-yellow-600 dark:group-hover:text-yellow-500 transition-colors tracking-tighter">
+            <div className="p-5 sm:p-8">
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mb-2 sm:mb-3 line-clamp-1 group-hover:text-yellow-600 dark:group-hover:text-yellow-500 transition-colors tracking-tighter">
                     {course.title}
                 </h3>
-                <p className="text-sm font-bold text-slate-400 dark:text-slate-500 line-clamp-2 mb-6 leading-relaxed">
+                <p className="text-[13px] sm:text-sm font-bold text-slate-400 dark:text-slate-500 line-clamp-2 mb-4 sm:mb-6 leading-relaxed">
                     {course.description}
                 </p>
 
                 {/* Mini Stats Grid */}
-                <div className="grid grid-cols-3 gap-3 mb-8">
-                    <div className="flex flex-col items-center justify-center p-3 py-4 bg-slate-50/50 dark:bg-white/[0.03] rounded-2xl border border-slate-100 dark:border-white/5">
-                        <BookOpen size={16} className="text-blue-500 mb-2" />
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Units</span>
-                        <div className="text-sm font-black text-slate-900 dark:text-white">{course.units.length}</div>
+                <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-6 sm:mb-8">
+                    <div className="flex flex-col items-center justify-center p-2 sm:p-3 py-3 sm:py-4 bg-slate-50/50 dark:bg-white/[0.03] rounded-xl sm:rounded-2xl border border-slate-100 dark:border-white/5">
+                        <BookOpen className="text-blue-500 mb-1 sm:mb-2 w-4 h-4 sm:w-5 sm:h-5" />
+                        <span className="text-[8px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Units</span>
+                        <div className="text-xs sm:text-sm font-black text-slate-900 dark:text-white">{course.units.length}</div>
                     </div>
-                    <div className="flex flex-col items-center justify-center p-3 py-4 bg-slate-50/50 dark:bg-white/[0.03] rounded-2xl border border-slate-100 dark:border-white/5">
-                        <PlayCircle size={16} className="text-emerald-500 mb-2" />
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Lessons</span>
-                        <div className="text-sm font-black text-slate-900 dark:text-white">{lessonsCount}</div>
+                    <div className="flex flex-col items-center justify-center p-2 sm:p-3 py-3 sm:py-4 bg-slate-50/50 dark:bg-white/[0.03] rounded-xl sm:rounded-2xl border border-slate-100 dark:border-white/5">
+                        <PlayCircle className="text-emerald-500 mb-1 sm:mb-2 w-4 h-4 sm:w-5 sm:h-5" />
+                        <span className="text-[8px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Lessons</span>
+                        <div className="text-xs sm:text-sm font-black text-slate-900 dark:text-white">{lessonsCount}</div>
                     </div>
-                    <div className="flex flex-col items-center justify-center p-3 py-4 bg-slate-50/50 dark:bg-white/[0.03] rounded-2xl border border-slate-100 dark:border-white/5">
-                        <Users size={16} className="text-yellow-500 mb-2" />
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Students</span>
-                        <div className="text-sm font-black text-slate-900 dark:text-white">{course._count.enrollments}</div>
+                    <div className="flex flex-col items-center justify-center p-2 sm:p-3 py-3 sm:py-4 bg-slate-50/50 dark:bg-white/[0.03] rounded-xl sm:rounded-2xl border border-slate-100 dark:border-white/5">
+                        <Users className="text-yellow-500 mb-1 sm:mb-2 w-4 h-4 sm:w-5 sm:h-5" />
+                        <span className="text-[8px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Students</span>
+                        <div className="text-xs sm:text-sm font-black text-slate-900 dark:text-white">{course._count.enrollments}</div>
                     </div>
                 </div>
 
@@ -134,6 +134,7 @@ export function CourseCard({ course }: CourseCardProps) {
                     <Link
                         href={`/admin/courses/${course.id}/students`}
                         className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400 hover:opacity-80 transition-opacity"
+                        onClick={(e) => e.stopPropagation()}
                     >
                         <Users size={14} />
                         {t("students")}
@@ -141,6 +142,7 @@ export function CourseCard({ course }: CourseCardProps) {
                     <Link
                         href={`/admin/courses/${course.id}/content`}
                         className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-yellow-600 dark:text-yellow-500 hover:opacity-80 transition-opacity"
+                        onClick={(e) => e.stopPropagation()}
                     >
                         <FileText size={14} />
                         {t("content")}

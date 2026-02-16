@@ -53,30 +53,30 @@ export function RecentActivity({ latestPosts, latestUsers }: RecentActivityProps
                 className="bg-white/70 dark:bg-slate-900/70 backdrop-blur-2xl border border-slate-200/50 dark:border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl shadow-black/5"
             >
                 {/* Custom Header */}
-                <div className="flex items-center justify-between p-10 border-b border-slate-200/50 dark:border-white/5 bg-slate-50/50 dark:bg-white/5">
-                    <div className="flex items-center gap-5">
-                        <div className="w-14 h-14 bg-blue-500/10 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/5">
-                            <FileText className="text-blue-500" size={28} />
+                <div className="flex items-center justify-between p-6 sm:p-10 border-b border-slate-200/50 dark:border-white/5 bg-slate-50/50 dark:bg-white/5">
+                    <div className="flex items-center gap-4 sm:gap-5">
+                        <div className="w-12 h-12 sm:w-14 sm:h-14 bg-blue-500/10 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/5">
+                            <FileText className="text-blue-500 w-6 h-6 sm:w-7 sm:h-7" />
                         </div>
                         <div>
-                            <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter">
+                            <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tighter">
                                 {t("latestPosts")}
                             </h2>
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
-                                Content Pipeline
+                            <p className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                                Pipeline
                             </p>
                         </div>
                     </div>
                     <Link
                         href="/admin/posts"
-                        className="w-12 h-12 rounded-2xl bg-white/50 dark:bg-white/5 flex items-center justify-center text-slate-400 hover:text-blue-500 hover:bg-white dark:hover:bg-white/10 transition-all group shadow-sm"
+                        className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-white/50 dark:bg-white/5 flex items-center justify-center text-slate-400 hover:text-blue-500 hover:bg-white dark:hover:bg-white/10 transition-all group shadow-sm"
                     >
-                        <ArrowLeft size={20} className="group-hover:translate-x-[-4px] transition-transform duration-300" />
+                        <ArrowLeft size={18} className="group-hover:translate-x-[-4px] transition-transform duration-300" />
                     </Link>
                 </div>
 
                 {/* News Feed */}
-                <div className="p-8">
+                <div className="p-4 sm:p-8">
                     {latestPosts.length === 0 ? (
                         <EmptyState icon="📰" label={t("emptyPosts")} />
                     ) : (
@@ -85,19 +85,19 @@ export function RecentActivity({ latestPosts, latestUsers }: RecentActivityProps
                                 <motion.div
                                     key={p.id}
                                     variants={item}
-                                    className="group flex items-center gap-6 p-6 rounded-[2rem] hover:bg-white dark:hover:bg-white/5 border border-transparent hover:border-slate-100 dark:hover:border-white/5 transition-all duration-500 cursor-pointer shadow-none hover:shadow-2xl hover:shadow-black/5 active:scale-[0.98]"
+                                    className="group flex items-center gap-4 sm:gap-6 p-4 sm:p-6 rounded-[1.5rem] sm:rounded-[2rem] hover:bg-white dark:hover:bg-white/5 border border-transparent hover:border-slate-100 dark:hover:border-white/5 transition-all duration-500 cursor-pointer shadow-none hover:shadow-2xl hover:shadow-black/5 active:scale-[0.98]"
                                 >
                                     {/* Visual Indicator */}
-                                    <div className={`w-3.5 h-3.5 rounded-full shrink-0 shadow-lg ${p.isDraft ? "bg-amber-400 shadow-amber-400/20" : "bg-emerald-400 shadow-emerald-400/20"}`} />
+                                    <div className={`w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full shrink-0 shadow-lg ${p.isDraft ? "bg-amber-400 shadow-amber-400/20" : "bg-emerald-400 shadow-emerald-400/20"}`} />
 
                                     {/* Info Section */}
                                     <div className="flex-1 min-w-0">
-                                        <div className="text-lg font-black text-slate-900 dark:text-white truncate group-hover:text-blue-500 transition-colors tracking-tight">
+                                        <div className="text-base sm:text-lg font-black text-slate-900 dark:text-white truncate group-hover:text-blue-500 transition-colors tracking-tight">
                                             {p.title}
                                         </div>
-                                        <div className="flex items-center gap-3 text-[11px] font-black text-slate-400 mt-2 uppercase tracking-widest">
-                                            <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-white/5 px-2.5 py-1 rounded-lg">
-                                                <Clock size={12} />
+                                        <div className="flex items-center gap-3 text-[10px] sm:text-[11px] font-black text-slate-400 mt-1 sm:mt-2 uppercase tracking-widest">
+                                            <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-white/5 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg">
+                                                <Clock size={10} />
                                                 <span>{new Intl.DateTimeFormat(locale, { dateStyle: "medium" }).format(new Date(p.createdAt))}</span>
                                             </div>
                                         </div>
@@ -125,30 +125,30 @@ export function RecentActivity({ latestPosts, latestUsers }: RecentActivityProps
                 className="bg-white/70 dark:bg-slate-900/70 backdrop-blur-2xl border border-slate-200/50 dark:border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl shadow-black/5"
             >
                 {/* Custom Header */}
-                <div className="flex items-center justify-between p-10 border-b border-slate-200/50 dark:border-white/5 bg-slate-50/50 dark:bg-white/5">
-                    <div className="flex items-center gap-5">
-                        <div className="w-14 h-14 bg-rose-500/10 rounded-2xl flex items-center justify-center shadow-lg shadow-rose-500/5">
-                            <UserPlus className="text-rose-500" size={28} />
+                <div className="flex items-center justify-between p-6 sm:p-10 border-b border-slate-200/50 dark:border-white/5 bg-slate-50/50 dark:bg-white/5">
+                    <div className="flex items-center gap-4 sm:gap-5">
+                        <div className="w-12 h-12 sm:w-14 sm:h-14 bg-rose-500/10 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg shadow-rose-500/5">
+                            <UserPlus className="text-rose-500 w-6 h-6 sm:w-7 sm:h-7" />
                         </div>
                         <div>
-                            <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter">
+                            <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tighter">
                                 {t("latestUsers")}
                             </h2>
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
-                                Community Growth
+                            <p className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                                Growth
                             </p>
                         </div>
                     </div>
                     <Link
                         href="/admin/users"
-                        className="w-12 h-12 rounded-2xl bg-white/50 dark:bg-white/5 flex items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-white dark:hover:bg-white/10 transition-all group shadow-sm"
+                        className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-white/50 dark:bg-white/5 flex items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-white dark:hover:bg-white/10 transition-all group shadow-sm"
                     >
-                        <ArrowLeft size={20} className="group-hover:translate-x-[-4px] transition-transform duration-300" />
+                        <ArrowLeft size={18} className="group-hover:translate-x-[-4px] transition-transform duration-300" />
                     </Link>
                 </div>
 
                 {/* Users Feed */}
-                <div className="p-8">
+                <div className="p-4 sm:p-8">
                     {latestUsers.length === 0 ? (
                         <EmptyState icon="👥" label={t("emptyUsers")} />
                     ) : (
@@ -157,11 +157,11 @@ export function RecentActivity({ latestPosts, latestUsers }: RecentActivityProps
                                 <motion.div
                                     key={u.id}
                                     variants={item}
-                                    className="flex items-center gap-6 p-6 rounded-[2rem] hover:bg-white dark:hover:bg-white/5 border border-transparent hover:border-slate-100 dark:hover:border-white/5 transition-all duration-500 group cursor-pointer active:scale-[0.98]"
+                                    className="flex items-center gap-4 sm:gap-6 p-4 sm:p-6 rounded-[1.5rem] sm:rounded-[2rem] hover:bg-white dark:hover:bg-white/5 border border-transparent hover:border-slate-100 dark:hover:border-white/5 transition-all duration-500 group cursor-pointer active:scale-[0.98]"
                                 >
                                     {/* Modern Avatar */}
                                     <div
-                                        className="w-14 h-14 rounded-[1.5rem] flex items-center justify-center font-black text-white text-lg shrink-0 shadow-2xl shadow-black/20 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500"
+                                        className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-[1.5rem] flex items-center justify-center font-black text-white text-base sm:text-lg shrink-0 shadow-2xl shadow-black/20 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500"
                                         style={{
                                             background: `linear-gradient(135deg, ${getGradient(i)})`
                                         }}
@@ -171,10 +171,10 @@ export function RecentActivity({ latestPosts, latestUsers }: RecentActivityProps
 
                                     {/* User Details */}
                                     <div className="flex-1 min-w-0">
-                                        <div className="text-lg font-black text-slate-900 dark:text-white truncate tracking-tight">
+                                        <div className="text-base sm:text-lg font-black text-slate-900 dark:text-white truncate tracking-tight">
                                             {u.name ?? t("noName")}
                                         </div>
-                                        <div className="text-xs font-bold text-slate-400 truncate mt-1">
+                                        <div className="text-[11px] sm:text-xs font-bold text-slate-400 truncate mt-0.5 sm:mt-1">
                                             {u.email}
                                         </div>
                                     </div>
@@ -212,7 +212,7 @@ function Badge({ label, variant }: { label: string; variant: "green" | "orange" 
     };
 
     return (
-        <span className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest ${styles[variant]}`}>
+        <span className={`px-3 sm:px-4 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-widest ${styles[variant]}`}>
             {label}
         </span>
     );

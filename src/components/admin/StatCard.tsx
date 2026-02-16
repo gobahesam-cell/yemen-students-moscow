@@ -93,7 +93,7 @@ export function StatCard({ title, value, icon: Icon, color, trend, index = 0 }: 
             whileHover={{ y: -10, transition: { duration: 0.3 } }}
             className={`
                 relative bg-white/80 dark:bg-slate-900/40 backdrop-blur-xl border border-slate-200/50 dark:border-white/5 
-                rounded-[2.5rem] p-8 shadow-sm ${config.glow} hover:shadow-2xl
+                rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 shadow-sm ${config.glow} hover:shadow-2xl
                 transition-all duration-500 cursor-pointer overflow-hidden group
             `}
         >
@@ -101,9 +101,9 @@ export function StatCard({ title, value, icon: Icon, color, trend, index = 0 }: 
             <div className={`absolute -right-20 -top-20 w-40 h-40 bg-gradient-to-br ${config.gradient} rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700`} />
 
             {/* Top Row: Icon and Trend */}
-            <div className="flex items-start justify-between mb-8 relative z-10">
-                <div className={`w-14 h-14 rounded-2xl ${config.light} flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:rotate-6 shadow-lg shadow-black/5`}>
-                    <Icon className={config.text} size={28} />
+            <div className="flex items-start justify-between mb-6 sm:mb-8 relative z-10">
+                <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl ${config.light} flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:rotate-6 shadow-lg shadow-black/5`}>
+                    <Icon className={`${config.text} w-6 h-6 sm:w-7 sm:h-7`} />
                 </div>
                 {trend && (
                     <div className={`
@@ -120,10 +120,10 @@ export function StatCard({ title, value, icon: Icon, color, trend, index = 0 }: 
 
             {/* Value Section */}
             <div className="relative z-10">
-                <div className="text-5xl font-black text-slate-900 dark:text-white mb-2 tracking-tighter leading-none">
+                <div className="text-4xl sm:text-5xl font-black text-slate-900 dark:text-white mb-1 sm:mb-2 tracking-tighter leading-none">
                     {count.toLocaleString()}
                 </div>
-                <div className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">
+                <div className="text-[9px] sm:text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">
                     {title}
                 </div>
             </div>

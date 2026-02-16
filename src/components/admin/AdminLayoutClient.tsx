@@ -190,8 +190,8 @@ export function AdminLayoutClient({
             {/* ===== MAIN CONTENT AREA ===== */}
             <main className="flex-1 flex flex-col min-w-0 relative z-10">
 
-                {/* Modern Header */}
-                <header className="h-20 flex items-center justify-between px-6 lg:px-8">
+                {/* Modern Header - Sticky/Fixed for Mobile & Desktop */}
+                <header className="sticky top-0 z-40 h-20 flex items-center justify-between px-6 lg:px-8 bg-slate-50/80 dark:bg-[#050505]/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-white/5">
                     {/* Header Left: Menu Toggle & Title */}
                     <div className="flex items-center gap-4">
                         <motion.button
@@ -219,7 +219,7 @@ export function AdminLayoutClient({
                     <motion.div
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="flex items-center gap-3 p-1.5 rounded-2xl bg-white/50 dark:bg-slate-900/50 backdrop-blur-lg border border-slate-200/50 dark:border-white/5 shadow-sm"
+                        className="flex items-center gap-2 sm:gap-3 p-1 sm:p-1.5 rounded-2xl bg-white/50 dark:bg-slate-900/50 backdrop-blur-lg border border-slate-200/50 dark:border-white/5 shadow-sm"
                     >
                         <LocaleSwitcherIcon />
                         <div className="w-px h-6 bg-slate-200 dark:bg-white/10 mx-1" />
@@ -228,10 +228,10 @@ export function AdminLayoutClient({
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             onClick={() => logoutAction()}
-                            className="flex items-center gap-2 px-4 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 rounded-xl text-xs font-black transition-all"
+                            className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 rounded-xl text-xs font-black transition-all"
                         >
                             <LogOut size={16} />
-                            <span className="hidden sm:inline uppercase tracking-widest">{t("nav.logout")}</span>
+                            <span className="hidden md:inline uppercase tracking-widest">{t("nav.logout")}</span>
                         </motion.button>
                     </motion.div>
                 </header>

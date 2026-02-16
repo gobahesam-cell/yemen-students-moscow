@@ -50,13 +50,19 @@ export default function ImageUploader({ value, onChange, folder = "yemen_student
 
             const data = await res.json();
 
-            if (!res.ok) {
-                throw new Error(data.error || t("uploadError"));
+            if (!res.ok || data.error) {
+                throw new Error(data.error || t("uploadError") || "Upload failed");
             }
 
-            onChange(data.url);
+            if (data.url) {
+                onChange(data.url);
+                setError("");
+            } else {
+                throw new Error(t("uploadError") || "Upload failed");
+            }
         } catch (err: any) {
-            setError(err.message || t("uploadError"));
+            console.error("Upload error details:", err);
+            setError(err.message || t("uploadError") || "Upload failed");
         } finally {
             setUploading(false);
         }
