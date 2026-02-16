@@ -7,9 +7,17 @@ import { COOKIE_NAME, decodeSession } from "@/lib/session-core";
 export async function POST(request: Request) {
     try {
         // التحقق من وجود مفاتيح Cloudinary أولاً
-        if (!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
-            console.error("Missing Cloudinary configuration for public upload");
-            return NextResponse.json({ error: "إعدادات الرفع ناقصة (Environment Variables missing)" }, { status: 500 });
+        const missing = [];
+        if (!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME) missing.push("NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME");
+        if (!process.env.CLOUDINARY_API_KEY) missing.push("CLOUDINARY_API_KEY");
+        if (!process.env.CLOUDINARY_API_SECRET) missing.push("CLOUDINARY_API_SECRET");
+
+        if (missing.length > 0) {
+            console.error("Missing Cloudinary configuration for public upload", missing);
+            return NextResponse.json({
+                error: "إعدادات الرفع ناقصة (Environment Variables missing)",
+                detail: `المتغيرات المفقودة: ${missing.join(", ")}`
+            }, { status: 500 });
         }
 
         const cookieStore = await cookies();
