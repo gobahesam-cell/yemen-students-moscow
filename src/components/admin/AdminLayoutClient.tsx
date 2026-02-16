@@ -75,7 +75,7 @@ export function AdminLayoutClient({
         <div className="flex min-h-screen bg-slate-50 dark:bg-[#050505] text-slate-900 dark:text-slate-100 selection:bg-yellow-500/30" dir={isRTL ? "rtl" : "ltr"}>
 
             {/* Background Gradient Orbs */}
-            <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+            <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 print:hidden">
                 <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-yellow-500/5 dark:bg-yellow-500/10 rounded-full blur-[120px]" />
                 <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-[120px]" />
             </div>
@@ -94,6 +94,7 @@ export function AdminLayoutClient({
                             border border-slate-200/50 dark:border-white/5 shadow-2xl shadow-black/5
                             rounded-[2rem] flex flex-col overflow-hidden
                             lg:sticky lg:top-4 lg:left-auto lg:right-auto lg:h-[calc(100vh-2rem)] lg:my-4 lg:mx-4
+                            print:hidden
                         `}
                     >
                         {/* Logo Area */}
@@ -106,7 +107,7 @@ export function AdminLayoutClient({
                                     <span className="font-black text-lg leading-tight tracking-tight dark:text-white">
                                         YSM<span className="text-yellow-500">Panel</span>
                                     </span>
-                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">Admin Area</span>
+                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">{t("adminArea")}</span>
                                 </div>
                             </Link>
                             <button
@@ -191,7 +192,7 @@ export function AdminLayoutClient({
             <main className="flex-1 flex flex-col min-w-0 relative z-10">
 
                 {/* Modern Header - Sticky/Fixed for Mobile & Desktop */}
-                <header className="sticky top-0 z-40 h-20 flex items-center justify-between px-6 lg:px-8 bg-slate-50/80 dark:bg-[#050505]/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-white/5">
+                <header className="sticky top-0 z-40 h-20 flex items-center justify-between px-6 lg:px-8 bg-slate-50/80 dark:bg-[#050505]/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-white/5 print:hidden">
                     {/* Header Left: Menu Toggle & Title */}
                     <div className="flex items-center gap-4">
                         <motion.button

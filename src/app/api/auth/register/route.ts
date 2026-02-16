@@ -29,8 +29,9 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "كلمة المرور يجب أن تكون 6 أحرف على الأقل" }, { status: 400 });
         }
 
-        if (!university || !city) {
-            return NextResponse.json({ error: "الجامعة والمدينة مطلوبين" }, { status: 400 });
+        // المدينة أصبحت مطلوبة في النسخة الجديدة
+        if (!city) {
+            return NextResponse.json({ error: "المدينة مطلوبة" }, { status: 400 });
         }
 
         if (!agreedToTerms || !agreedToPrivacy) {
@@ -57,7 +58,7 @@ export async function POST(req: Request) {
                 email,
                 passwordHash,
                 role: "MEMBER",
-                university,
+                university: university || null,
                 city,
                 phone: phone || null,
                 telegram: telegram || null,

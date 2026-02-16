@@ -20,6 +20,7 @@ model User {
   // معلومات إضافية
   university     String?            // الجامعة
   city           String?            // المدينة في روسيا
+  birthday       DateTime?          // تاريخ الميلاد
   bio            String?            // نبذة تعريفية
   phone          String?            // رقم الهاتف
   telegram       String?            // حساب تيليجرام

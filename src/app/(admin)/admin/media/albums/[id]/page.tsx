@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, FolderOpen, Loader2, Upload, Trash2, Save, ImageIcon, Check, X } from "lucide-react";
 import { useTranslations } from "next-intl";
+import ImageUploader from "@/components/admin/ImageUploader";
 
 interface Photo {
     id: string;
@@ -234,15 +235,11 @@ export default function AlbumDetailPage() {
                             <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">
                                 {t("coverImage")}
                             </label>
-                            <div className="aspect-video bg-slate-100 dark:bg-slate-800 rounded-xl overflow-hidden relative">
-                                {form.coverImage ? (
-                                    <img src={form.coverImage} alt="Cover" className="w-full h-full object-cover" />
-                                ) : (
-                                    <div className="flex items-center justify-center h-full text-slate-400">
-                                        <ImageIcon size={32} />
-                                    </div>
-                                )}
-                            </div>
+                            <ImageUploader
+                                value={form.coverImage || ""}
+                                onChange={(url) => setForm({ ...form, coverImage: url })}
+                                folder="yemen_students/albums"
+                            />
                         </div>
 
                         {/* Title Ar */}

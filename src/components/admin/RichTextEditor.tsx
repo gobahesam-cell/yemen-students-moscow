@@ -7,11 +7,16 @@ import Color from "@tiptap/extension-color";
 import TextStyle from "@tiptap/extension-text-style";
 import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
+import Underline from "@tiptap/extension-underline";
+import TextAlign from "@tiptap/extension-text-align";
+import Youtube from "@tiptap/extension-youtube";
 import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import {
     Bold, Italic, List, ListOrdered, Quote, Undo, Redo,
-    Type, Link as LinkIcon, Image as ImageIcon, Palette, Loader2
+    Type, Link as LinkIcon, Image as ImageIcon, Palette, Loader2,
+    Underline as UnderlineIcon, AlignLeft, AlignCenter, AlignRight,
+    Youtube as YoutubeIcon, Video, Globe
 } from "lucide-react";
 
 interface RichTextEditorProps {
@@ -30,6 +35,24 @@ const MenuBar = ({ editor }: { editor: any }) => {
         const url = window.prompt(t("enterUrl") || "Enter URL:");
         if (url) {
             editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
+        }
+    };
+
+    const addExternalImage = () => {
+        const url = window.prompt("Enter Image URL (e.g. from Telegram):");
+        if (url) {
+            editor.chain().focus().setImage({ src: url }).run();
+        }
+    };
+
+    const addYoutubeVideo = () => {
+        const url = window.prompt("Enter YouTube URL:");
+        if (url) {
+            editor.commands.setYoutubeVideo({
+                src: url,
+                width: 640,
+                height: 480,
+            });
         }
     };
 
@@ -115,6 +138,23 @@ const MenuBar = ({ editor }: { editor: any }) => {
                 <EditorButton onClick={() => editor.chain().focus().toggleItalic().run()} isActive={editor.isActive("italic")}>
                     <Italic size={16} />
                 </EditorButton>
+                <EditorButton onClick={() => editor.chain().focus().toggleUnderline().run()} isActive={editor.isActive("underline")}>
+                    <UnderlineIcon size={16} />
+                </EditorButton>
+            </div>
+
+            <div className="w-px h-6 bg-slate-200 dark:bg-white/10 mx-1" />
+
+            <div className="flex items-center gap-1">
+                <EditorButton onClick={() => editor.chain().focus().setTextAlign('left').run()} isActive={editor.isActive({ textAlign: 'left' })}>
+                    <AlignLeft size={16} />
+                </EditorButton>
+                <EditorButton onClick={() => editor.chain().focus().setTextAlign('center').run()} isActive={editor.isActive({ textAlign: 'center' })}>
+                    <AlignCenter size={16} />
+                </EditorButton>
+                <EditorButton onClick={() => editor.chain().focus().setTextAlign('right').run()} isActive={editor.isActive({ textAlign: 'right' })}>
+                    <AlignRight size={16} />
+                </EditorButton>
             </div>
 
             <div className="w-px h-6 bg-slate-200 dark:bg-white/10 mx-1" />
@@ -137,8 +177,14 @@ const MenuBar = ({ editor }: { editor: any }) => {
                 <EditorButton onClick={addLink} isActive={editor.isActive("link")}>
                     <LinkIcon size={16} />
                 </EditorButton>
-                <EditorButton onClick={() => fileInputRef.current?.click()} disabled={imageUploading}>
+                <EditorButton onClick={() => fileInputRef.current?.click()} disabled={imageUploading} title="Upload Local Image">
                     {imageUploading ? <Loader2 size={16} className="animate-spin" /> : <ImageIcon size={16} />}
+                </EditorButton>
+                <EditorButton onClick={addExternalImage} title="Add Image from URL (Telegram, etc.)">
+                    <Globe size={16} />
+                </EditorButton>
+                <EditorButton onClick={addYoutubeVideo} title="Embed YouTube Video">
+                    <YoutubeIcon size={16} />
                 </EditorButton>
             </div>
 
@@ -170,10 +216,18 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
             StarterKit,
             TextStyle,
             Color,
+            Underline,
+            TextAlign.configure({
+                types: ['heading', 'paragraph'],
+            }),
             Link.configure({
                 openOnClick: false,
             }),
             Image,
+            Youtube.configure({
+                controls: true,
+                nocookie: true,
+            }),
         ],
         content: content,
         onUpdate: ({ editor }) => {
@@ -181,13 +235,12 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
         },
         editorProps: {
             attributes: {
-                class: 'prose prose-sm dark:prose-invert max-w-none min-h-[300px] p-4 outline-none',
+                class: 'prose prose-sm md:prose-base dark:prose-invert max-w-none min-h-[400px] p-6 outline-none',
             },
         },
         immediatelyRender: false,
     });
 
-    // مزامنة المحتوى عندما يتغير من الخارج (مثلاً عند التوليد بالذكاء الاصطناعي)
     useEffect(() => {
         if (editor && content !== editor.getHTML()) {
             editor.commands.setContent(content);

@@ -95,15 +95,15 @@ export async function PUT(
         const updatedMember = await prisma.user.update({
             where: { id },
             data: {
-                name: name || null,
-                nameRu: nameRu || null,
+                name: name !== undefined ? (name || null) : existingMember.name,
+                nameRu: nameRu !== undefined ? (nameRu || null) : existingMember.nameRu,
                 email: email || existingMember.email,
-                role: role || existingMember.role,
-                university: university || null,
-                city: city || null,
-                bio: bio || null,
-                phone: phone || null,
-                telegram: telegram || null,
+                role: (role as any) || existingMember.role,
+                university: university !== undefined ? (university || null) : existingMember.university,
+                city: city !== undefined ? (city || null) : existingMember.city,
+                bio: bio !== undefined ? (bio || null) : existingMember.bio,
+                phone: phone !== undefined ? (phone || null) : existingMember.phone,
+                telegram: telegram !== undefined ? (telegram || null) : existingMember.telegram,
             },
         });
 
