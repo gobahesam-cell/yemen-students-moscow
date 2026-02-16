@@ -30,8 +30,9 @@ export default function ImageUploader({ value, onChange, folder = "yemen_student
             return;
         }
 
-        if (file.size > 10 * 1024 * 1024) {
-            setError(t("uploadTooLarge"));
+        // Vercel body size limit is 4.5MB
+        if (file.size > 4.5 * 1024 * 1024) {
+            setError("حجم الملف يجب أن لا يتجاوز 4.5MB (قيود Vercel)");
             return;
         }
 
@@ -51,7 +52,9 @@ export default function ImageUploader({ value, onChange, folder = "yemen_student
             const data = await res.json();
 
             if (!res.ok || data.error) {
-                throw new Error(data.error || t("uploadError") || "Upload failed");
+                // If there's a detailed error from the server (like Vercel limits or Cloudinary issues)
+                const errorMsg = data.detail ? `${data.error}: ${data.detail}` : (data.error || t("uploadError"));
+                throw new Error(errorMsg);
             }
 
             if (data.url) {
@@ -184,7 +187,7 @@ export default function ImageUploader({ value, onChange, folder = "yemen_student
                                 </p>
                                 <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-loose">
                                     JPEG, PNG, WebP, GIF<br />
-                                    {t("maxSize")} 10MB
+                                    {t("maxSize")} 4.5MB
                                 </p>
                             </div>
                         </motion.div>

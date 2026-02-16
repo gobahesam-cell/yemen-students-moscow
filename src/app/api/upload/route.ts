@@ -6,6 +6,12 @@ import { COOKIE_NAME, decodeSession } from "@/lib/session-core";
 // POST upload file - تم التحويل إلى Cloudinary ليعمل على Vercel
 export async function POST(request: Request) {
     try {
+        // التحقق من وجود مفاتيح Cloudinary أولاً
+        if (!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+            console.error("Missing Cloudinary configuration for public upload");
+            return NextResponse.json({ error: "إعدادات الرفع ناقصة (Environment Variables missing)" }, { status: 500 });
+        }
+
         const cookieStore = await cookies();
         const token = cookieStore.get(COOKIE_NAME)?.value;
         const session = await decodeSession(token);
@@ -24,25 +30,22 @@ export async function POST(request: Request) {
 
         // Validate file type
         const allowedTypes = [
-            "application/pdf",
             "image/jpeg",
             "image/png",
             "image/webp",
             "image/gif",
-            "video/mp4",
-            "video/webm",
         ];
 
         if (!allowedTypes.includes(file.type)) {
             return NextResponse.json(
-                { error: "File type not allowed. Allowed: PDF, images, videos" },
+                { error: `File type ${file.type} not allowed. Allowed: images` },
                 { status: 400 }
             );
         }
 
-        // Max file size check (50MB check remains, but Cloudinary free tier has its own limits)
-        if (file.size > 50 * 1024 * 1024) {
-            return NextResponse.json({ error: "File too large. Max 50MB" }, { status: 400 });
+        // Max file size check for Vercel compliance (4.5MB)
+        if (file.size > 4.5 * 1024 * 1024) {
+            return NextResponse.json({ error: "حجم الملف كبير جداً بالنسبة لـ Vercel. الحد الأقصى 4.5MB" }, { status: 400 });
         }
 
         // تحويل الملف إلى data URI للرفع لـ Cloudinary
@@ -62,8 +65,11 @@ export async function POST(request: Request) {
             type: file.type,
         });
     } catch (error: any) {
-        console.error("Upload error:", error);
-        return NextResponse.json({ error: "Failed to upload file to storage" }, { status: 500 });
+        console.error("General upload error:", error);
+        return NextResponse.json({
+            error: "Failed to upload file to storage",
+            detail: error.message || "Unknown error"
+        }, { status: 500 });
     }
 }
 
