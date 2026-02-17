@@ -54,7 +54,6 @@ export default async function MemberProfilePage({ params }: PageProps) {
             bio: true,
             phone: true,
             telegram: true,
-            isOnline: true,
             lastSeenAt: true,
             createdAt: true,
             role: true,
@@ -74,7 +73,7 @@ export default async function MemberProfilePage({ params }: PageProps) {
 
     // التحقق من حالة الاتصال الفعلية
     const isActuallyOnline =
-        member.isOnline &&
+        (member as any).isOnline &&
         member.lastSeenAt &&
         Date.now() - new Date(member.lastSeenAt).getTime() < 2 * 60 * 1000;
 

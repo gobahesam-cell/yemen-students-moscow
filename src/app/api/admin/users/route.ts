@@ -70,7 +70,10 @@ export async function POST(req: Request) {
         }
 
         // check duplicate
-        const existing = await prisma.user.findUnique({ where: { email } });
+        const existing = await prisma.user.findUnique({
+            where: { email },
+            select: { id: true }
+        });
         if (existing) {
             return NextResponse.json({ error: "User already exists" }, { status: 400 });
         }

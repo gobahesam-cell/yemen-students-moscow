@@ -41,6 +41,7 @@ export async function POST(req: Request) {
         // التحقق من وجود الحساب مسبقاً
         const existingUser = await prisma.user.findUnique({
             where: { email },
+            select: { id: true }
         });
 
         if (existingUser) {

@@ -68,6 +68,7 @@ export async function PUT(request: Request) {
                 telegram: telegram || null,
                 image: image || null,
             },
+            select: { id: true }
         });
 
         return NextResponse.json({ success: true, user: updatedUser });

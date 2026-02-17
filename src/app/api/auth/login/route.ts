@@ -20,7 +20,17 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Missing email or password" }, { status: 400 });
   }
 
-  const user = await prisma.user.findUnique({ where: { email } });
+  const user = await prisma.user.findUnique({
+    where: { email },
+    select: {
+      id: true,
+      email: true,
+      passwordHash: true,
+      role: true,
+      name: true,
+      nameRu: true,
+    }
+  });
   if (!user) {
     return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
   }

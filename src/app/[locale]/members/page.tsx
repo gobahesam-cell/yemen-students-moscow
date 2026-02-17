@@ -76,7 +76,6 @@ export default async function MembersPage({
             image: true,
             university: true,
             city: true,
-            isOnline: true,
             lastSeenAt: true,
             createdAt: true,
         },
@@ -90,7 +89,7 @@ export default async function MembersPage({
     // التحقق من حالة الاتصال الفعلية
     const membersWithStatus = members.map((member) => {
         const isActuallyOnline =
-            member.isOnline &&
+            (member as any).isOnline &&
             member.lastSeenAt &&
             Date.now() - new Date(member.lastSeenAt).getTime() < 2 * 60 * 1000;
 

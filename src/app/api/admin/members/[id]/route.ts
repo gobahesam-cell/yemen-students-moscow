@@ -36,9 +36,9 @@ export async function GET(
                 isOnline: true,
                 lastSeenAt: true,
                 createdAt: true,
-                agreedToTerms: true,
-                agreedToPrivacy: true,
-                dataConsentDate: true,
+                agreedToTerms: false,
+                agreedToPrivacy: false,
+                dataConsentDate: false,
             },
         });
 

@@ -43,7 +43,6 @@ export async function GET(request: Request) {
         const user = await prisma.user.findUnique({
             where: { id: userId },
             select: {
-                isOnline: true,
                 lastSeenAt: true,
             },
         });
@@ -55,7 +54,7 @@ export async function GET(request: Request) {
         // التحقق مما إذا كان المستخدم متصلاً فعلياً
         // إذا مر أكثر من دقيقتين بدون heartbeat، يعتبر غير متصل
         const isActuallyOnline =
-            user.isOnline &&
+            (user as any).isOnline &&
             user.lastSeenAt &&
             Date.now() - new Date(user.lastSeenAt).getTime() < 2 * 60 * 1000;
 

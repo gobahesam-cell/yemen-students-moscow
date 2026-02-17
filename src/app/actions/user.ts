@@ -18,6 +18,7 @@ export async function updateAvatarAction(imageUrl: string) {
         await prisma.user.update({
             where: { id: session.userId },
             data: { image: imageUrl },
+            select: { id: true }
         });
 
         revalidatePath("/[locale]/(auth)/account", "page");
