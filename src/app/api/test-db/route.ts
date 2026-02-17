@@ -2,9 +2,15 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
 export async function GET() {
-  const users = await prisma.user.findMany({
-    select: { id: true, email: true, role: true, createdAt: true },
-  });
+  try {
+    const columns: any = await prisma.$queryRaw`
+      SELECT column_name, data_type 
+      FROM information_schema.columns 
+      WHERE table_name = 'User'
+    `;
 
-  return NextResponse.json({ count: users.length, users });
+    return NextResponse.json({ columns });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 }
