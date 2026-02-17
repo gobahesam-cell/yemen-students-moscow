@@ -104,6 +104,10 @@ export async function PUT(
                 bio: bio !== undefined ? (bio || null) : existingMember.bio,
                 phone: phone !== undefined ? (phone || null) : existingMember.phone,
                 telegram: telegram !== undefined ? (telegram || null) : existingMember.telegram,
+                // ضمان بقاء القيم القديمة أو الافتراضية إذا كانت null
+                isOnline: existingMember.isOnline ?? false,
+                agreedToTerms: existingMember.agreedToTerms ?? false,
+                agreedToPrivacy: existingMember.agreedToPrivacy ?? false,
             },
         });
 

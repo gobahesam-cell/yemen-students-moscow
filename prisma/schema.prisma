@@ -27,11 +27,11 @@ model User {
   
   // حالة الاتصال
   lastSeenAt     DateTime?          // آخر ظهور
-  isOnline       Boolean            @default(false)
+  isOnline       Boolean?            @default(false)
   
   // الموافقات القانونية
-  agreedToTerms      Boolean        @default(false)  // الموافقة على الشروط
-  agreedToPrivacy    Boolean        @default(false)  // الموافقة على سياسة الخصوصية
+  agreedToTerms      Boolean?        @default(false)  // الموافقة على الشروط
+  agreedToPrivacy    Boolean?        @default(false)  // الموافقة على سياسة الخصوصية
   dataConsentDate    DateTime?      // تاريخ الموافقة على معالجة البيانات (القانون الروسي)
   
   // العلاقات
