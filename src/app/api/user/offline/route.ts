@@ -14,12 +14,17 @@ export async function POST() {
             return NextResponse.json({ success: true });
         }
 
-        await prisma.user.update({
-            where: { id: session.userId },
-            data: {
-                isOnline: false,
-            },
-        });
+        try {
+            await prisma.user.update({
+                where: { id: session.userId },
+                data: {
+                    isOnline: false,
+                },
+                select: { id: true },
+            });
+        } catch {
+            // تجاهل - عمود isOnline قد لا يكون موجوداً
+        }
 
         return NextResponse.json({ success: true });
     } catch (error) {

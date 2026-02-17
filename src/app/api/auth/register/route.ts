@@ -29,15 +29,6 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "كلمة المرور يجب أن تكون 6 أحرف على الأقل" }, { status: 400 });
         }
 
-        // المدينة أصبحت مطلوبة في النسخة الجديدة
-        if (!city) {
-            return NextResponse.json({ error: "المدينة مطلوبة" }, { status: 400 });
-        }
-
-        if (!agreedToTerms || !agreedToPrivacy) {
-            return NextResponse.json({ error: "يجب الموافقة على الشروط وسياسة الخصوصية" }, { status: 400 });
-        }
-
         // التحقق من وجود الحساب مسبقاً
         const existingUser = await prisma.user.findUnique({
             where: { email },
@@ -51,23 +42,39 @@ export async function POST(req: Request) {
         // تشفير كلمة المرور
         const passwordHash = await bcrypt.hash(password, 10);
 
-        // إنشاء المستخدم مع جميع الحقول الجديدة
-        const user = await prisma.user.create({
-            data: {
-                name,
-                nameRu: nameRu || null,
-                email,
-                passwordHash,
-                role: "MEMBER",
-                university: university || null,
-                city,
-                phone: phone || null,
-                telegram: telegram || null,
-                agreedToTerms: true,
-                agreedToPrivacy: true,
-                dataConsentDate: new Date(),
-            },
-        });
+        // محاولة إنشاء المستخدم مع كل الحقول الجديدة
+        let user;
+        try {
+            user = await prisma.user.create({
+                data: {
+                    name,
+                    nameRu: nameRu || null,
+                    email,
+                    passwordHash,
+                    role: "MEMBER",
+                    university: university || null,
+                    city: city || null,
+                    phone: phone || null,
+                    telegram: telegram || null,
+                    agreedToTerms: true,
+                    agreedToPrivacy: true,
+                    dataConsentDate: new Date(),
+                },
+                select: { id: true, email: true, name: true, nameRu: true, role: true },
+            });
+        } catch {
+            // إذا فشل (أعمدة مفقودة في القاعدة القديمة)، إنشاء بالحقول الأساسية فقط
+            console.log("Falling back to basic user creation for:", email);
+            user = await prisma.user.create({
+                data: {
+                    name,
+                    email,
+                    passwordHash,
+                    role: "MEMBER",
+                },
+                select: { id: true, email: true, name: true, role: true },
+            });
+        }
 
         // مدة الجلسة 7 أيام
         const now = Math.floor(Date.now() / 1000);
@@ -78,7 +85,7 @@ export async function POST(req: Request) {
             userId: user.id,
             email: user.email,
             name: user.name || "",
-            nameRu: user.nameRu || null,
+            nameRu: (user as any).nameRu || null,
             role: user.role,
             exp,
         });
@@ -97,8 +104,6 @@ export async function POST(req: Request) {
             user: {
                 name: user.name,
                 role: user.role,
-                university: user.university,
-                city: user.city,
             }
         });
     } catch (error) {

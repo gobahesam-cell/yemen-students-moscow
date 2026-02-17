@@ -41,31 +41,54 @@ export default async function MemberProfilePage({ params }: PageProps) {
     const t = await getTranslations("Members");
     const isRTL = locale === "ar";
 
-    const member = await prisma.user.findUnique({
-        where: { id },
-        select: {
-            id: true,
-            name: true,
-            nameRu: true,
-            email: true,
-            image: true,
-            university: true,
-            city: true,
-            bio: true,
-            phone: true,
-            telegram: true,
-            lastSeenAt: true,
-            createdAt: true,
-            role: true,
-            _count: {
-                select: {
-                    rsvps: true,
-                    enrollments: true,
-                    photos: true,
+    let member: any;
+    try {
+        member = await prisma.user.findUnique({
+            where: { id },
+            select: {
+                id: true,
+                name: true,
+                nameRu: true,
+                email: true,
+                image: true,
+                university: true,
+                city: true,
+                bio: true,
+                phone: true,
+                telegram: true,
+                lastSeenAt: true,
+                createdAt: true,
+                role: true,
+                _count: {
+                    select: {
+                        rsvps: true,
+                        enrollments: true,
+                        photos: true,
+                    }
                 }
-            }
-        },
-    });
+            },
+        });
+    } catch {
+        // fallback
+        const basic = await prisma.user.findUnique({
+            where: { id },
+            select: { id: true, name: true, email: true, createdAt: true, role: true },
+        });
+        if (basic) {
+            member = {
+                ...basic,
+                nameRu: null,
+                image: null,
+                university: null,
+                city: null,
+                bio: null,
+                phone: null,
+                telegram: null,
+                lastSeenAt: null,
+                _count: { rsvps: 0, enrollments: 0, photos: 0 },
+            };
+        }
+    }
 
     if (!member || member.role === "ADMIN") {
         notFound();
@@ -73,9 +96,9 @@ export default async function MemberProfilePage({ params }: PageProps) {
 
     // التحقق من حالة الاتصال الفعلية
     const isActuallyOnline =
-        (member as any).isOnline &&
         member.lastSeenAt &&
         Date.now() - new Date(member.lastSeenAt).getTime() < 2 * 60 * 1000;
+
 
     const getUniversityName = (id: string | null) => {
         if (!id || !UNIVERSITIES[id]) return null;

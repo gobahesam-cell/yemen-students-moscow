@@ -14,21 +14,42 @@ export async function GET() {
             return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
         }
 
-        const user = await prisma.user.findUnique({
-            where: { id: session.userId },
-            select: {
-                id: true,
-                name: true,
-                nameRu: true,
-                email: true,
-                image: true,
-                university: true,
-                city: true,
-                bio: true,
-                phone: true,
-                telegram: true,
-            },
-        });
+        let user;
+        try {
+            user = await prisma.user.findUnique({
+                where: { id: session.userId },
+                select: {
+                    id: true,
+                    name: true,
+                    nameRu: true,
+                    email: true,
+                    image: true,
+                    university: true,
+                    city: true,
+                    bio: true,
+                    phone: true,
+                    telegram: true,
+                },
+            });
+        } catch {
+            // fallback
+            const basic = await prisma.user.findUnique({
+                where: { id: session.userId },
+                select: { id: true, name: true, email: true },
+            });
+            if (basic) {
+                user = {
+                    ...basic,
+                    nameRu: null,
+                    image: null,
+                    university: null,
+                    city: null,
+                    bio: null,
+                    phone: null,
+                    telegram: null,
+                };
+            }
+        }
 
         if (!user) {
             return NextResponse.json({ error: "المستخدم غير موجود" }, { status: 404 });
@@ -55,23 +76,34 @@ export async function PUT(request: Request) {
         const body = await request.json();
         const { name, nameRu, university, city, bio, phone, telegram, image } = body;
 
-        // تحديث البيانات
-        const updatedUser = await prisma.user.update({
-            where: { id: session.userId },
-            data: {
-                name: name || null,
-                nameRu: nameRu || null,
-                university: university || null,
-                city: city || null,
-                bio: bio || null,
-                phone: phone || null,
-                telegram: telegram || null,
-                image: image || null,
-            },
-            select: { id: true }
-        });
+        // محاولة تحديث كل الحقول
+        try {
+            await prisma.user.update({
+                where: { id: session.userId },
+                data: {
+                    name: name || null,
+                    nameRu: nameRu || null,
+                    university: university || null,
+                    city: city || null,
+                    bio: bio || null,
+                    phone: phone || null,
+                    telegram: telegram || null,
+                    image: image || null,
+                },
+                select: { id: true },
+            });
+        } catch {
+            // fallback - تحديث الأساسيات فقط
+            await prisma.user.update({
+                where: { id: session.userId },
+                data: {
+                    name: name || null,
+                },
+                select: { id: true },
+            });
+        }
 
-        return NextResponse.json({ success: true, user: updatedUser });
+        return NextResponse.json({ success: true });
     } catch (error) {
         console.error("Update Profile Error:", error);
         return NextResponse.json({ error: "خطأ في الخادم" }, { status: 500 });

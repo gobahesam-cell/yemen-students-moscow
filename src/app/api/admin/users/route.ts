@@ -18,39 +18,66 @@ export async function GET() {
     }
 
     try {
-        const users = await prisma.user.findMany({
-            orderBy: { createdAt: "desc" },
-            select: {
-                id: true,
-                email: true,
-                name: true,
-                nameRu: true,
-                role: true,
-                createdAt: true,
-                image: true,
-                university: true,
-                city: true,
-                lastSeenAt: true,
-                _count: {
-                    select: {
-                        rsvps: true,
-                        enrollments: true,
-                        photos: true,
+        let users;
+        try {
+            // محاولة جلب كل الحقول
+            users = await prisma.user.findMany({
+                orderBy: { createdAt: "desc" },
+                select: {
+                    id: true,
+                    email: true,
+                    name: true,
+                    nameRu: true,
+                    role: true,
+                    createdAt: true,
+                    image: true,
+                    university: true,
+                    city: true,
+                    lastSeenAt: true,
+                    _count: {
+                        select: {
+                            rsvps: true,
+                            enrollments: true,
+                            photos: true,
+                        }
                     }
-                }
-            },
-        });
+                },
+            });
+        } catch {
+            // إذا فشل، جلب الحقول الأساسية فقط
+            console.log("Falling back to basic user list");
+            const basicUsers = await prisma.user.findMany({
+                orderBy: { createdAt: "desc" },
+                select: {
+                    id: true,
+                    email: true,
+                    name: true,
+                    role: true,
+                    createdAt: true,
+                },
+            });
+            users = basicUsers.map(u => ({
+                ...u,
+                nameRu: null,
+                image: null,
+                university: null,
+                city: null,
+                lastSeenAt: null,
+                _count: { rsvps: 0, enrollments: 0, photos: 0 },
+            }));
+        }
 
-        // Compute isOnline dynamically: online if lastSeenAt is within the last 5 minutes
+        // Compute isOnline dynamically
         const ONLINE_THRESHOLD_MS = 5 * 60 * 1000;
         const now = Date.now();
-        const usersWithOnlineStatus = users.map(user => ({
+        const usersWithOnlineStatus = users.map((user: any) => ({
             ...user,
             isOnline: user.lastSeenAt ? (now - new Date(user.lastSeenAt).getTime()) < ONLINE_THRESHOLD_MS : false,
         }));
 
         return NextResponse.json(usersWithOnlineStatus);
     } catch (error) {
+        console.error("Fetch Users Error:", error);
         return NextResponse.json({ error: "Failed to fetch users" }, { status: 500 });
     }
 }

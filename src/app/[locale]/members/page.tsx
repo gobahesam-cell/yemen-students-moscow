@@ -66,38 +66,58 @@ export default async function MembersPage({
         ];
     }
 
-    // جلب الأعضاء
-    const members = await prisma.user.findMany({
-        where,
-        select: {
-            id: true,
-            name: true,
-            nameRu: true,
-            image: true,
-            university: true,
-            city: true,
-            lastSeenAt: true,
-            createdAt: true,
-        },
-        orderBy: [
-            { isOnline: "desc" },
-            { lastSeenAt: "desc" },
-        ],
-        take: 50,
-    });
+    // جلب الأعضاء مع fallback آمن
+    let members: any[];
+    try {
+        members = await prisma.user.findMany({
+            where,
+            select: {
+                id: true,
+                name: true,
+                nameRu: true,
+                image: true,
+                university: true,
+                city: true,
+                lastSeenAt: true,
+                createdAt: true,
+            },
+            orderBy: { createdAt: "desc" },
+            take: 50,
+        });
+    } catch {
+        // fallback - الحقول الأساسية فقط
+        members = await prisma.user.findMany({
+            where: { role: "MEMBER" },
+            select: {
+                id: true,
+                name: true,
+                createdAt: true,
+            },
+            orderBy: { createdAt: "desc" },
+            take: 50,
+        });
+        members = members.map((m: any) => ({
+            ...m,
+            nameRu: null,
+            image: null,
+            university: null,
+            city: null,
+            lastSeenAt: null,
+        }));
+    }
 
     // التحقق من حالة الاتصال الفعلية
-    const membersWithStatus = members.map((member) => {
+    const membersWithStatus = members.map((member: any) => {
         const isActuallyOnline =
-            (member as any).isOnline &&
             member.lastSeenAt &&
             Date.now() - new Date(member.lastSeenAt).getTime() < 2 * 60 * 1000;
 
         return {
             ...member,
-            isOnline: isActuallyOnline,
+            isOnline: isActuallyOnline || false,
         };
     });
+
 
     const getUniversityName = (id: string | null) => {
         if (!id || !UNIVERSITIES[id]) return null;

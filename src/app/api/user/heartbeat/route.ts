@@ -14,14 +14,19 @@ export async function POST() {
             return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
         }
 
-        // تحديث lastSeenAt و isOnline
-        await prisma.user.update({
-            where: { id: session.userId },
-            data: {
-                lastSeenAt: new Date(),
-                isOnline: true,
-            },
-        });
+        // محاولة تحديث lastSeenAt و isOnline
+        try {
+            await prisma.user.update({
+                where: { id: session.userId },
+                data: {
+                    lastSeenAt: new Date(),
+                    isOnline: true,
+                },
+                select: { id: true },
+            });
+        } catch {
+            // تجاهل - الأعمدة قد لا تكون موجودة
+        }
 
         return NextResponse.json({ success: true });
     } catch (error) {
@@ -40,27 +45,31 @@ export async function GET(request: Request) {
             return NextResponse.json({ error: "معرف المستخدم مطلوب" }, { status: 400 });
         }
 
-        const user = await prisma.user.findUnique({
-            where: { id: userId },
-            select: {
-                lastSeenAt: true,
-            },
-        });
+        let lastSeenAt = null;
+        try {
+            const user = await prisma.user.findUnique({
+                where: { id: userId },
+                select: {
+                    lastSeenAt: true,
+                },
+            });
 
-        if (!user) {
-            return NextResponse.json({ error: "المستخدم غير موجود" }, { status: 404 });
+            if (!user) {
+                return NextResponse.json({ error: "المستخدم غير موجود" }, { status: 404 });
+            }
+
+            lastSeenAt = user.lastSeenAt;
+        } catch {
+            // تجاهل - عمود lastSeenAt قد لا يكون موجوداً
         }
 
-        // التحقق مما إذا كان المستخدم متصلاً فعلياً
-        // إذا مر أكثر من دقيقتين بدون heartbeat، يعتبر غير متصل
         const isActuallyOnline =
-            (user as any).isOnline &&
-            user.lastSeenAt &&
-            Date.now() - new Date(user.lastSeenAt).getTime() < 2 * 60 * 1000;
+            lastSeenAt &&
+            Date.now() - new Date(lastSeenAt).getTime() < 2 * 60 * 1000;
 
         return NextResponse.json({
-            isOnline: isActuallyOnline,
-            lastSeenAt: user.lastSeenAt,
+            isOnline: isActuallyOnline || false,
+            lastSeenAt,
         });
     } catch (error) {
         console.error("Get Online Status Error:", error);

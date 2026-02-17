@@ -23,22 +23,47 @@ export default async function AccountPage({
         redirect(`/${locale}/login`);
     }
 
-    // جلب أحدث البيانات من DB مع اختيار الحقول اللازمة فقط لتحسين الأداء
-    const user = await prisma.user.findUnique({
-        where: { id: session.userId },
-        select: {
-            name: true,
-            nameRu: true,
-            email: true,
-            role: true,
-            image: true,
-            createdAt: true,
-            university: true,
-            city: true,
-            bio: true,
-            telegram: true,
-        },
-    });
+    // جلب البيانات مع fallback آمن
+    let user: any;
+    try {
+        user = await prisma.user.findUnique({
+            where: { id: session.userId },
+            select: {
+                name: true,
+                nameRu: true,
+                email: true,
+                role: true,
+                image: true,
+                createdAt: true,
+                university: true,
+                city: true,
+                bio: true,
+                telegram: true,
+            },
+        });
+    } catch {
+        // إذا فشل (أعمدة مفقودة)، جلب الأساسيات
+        const basicUser = await prisma.user.findUnique({
+            where: { id: session.userId },
+            select: {
+                name: true,
+                email: true,
+                role: true,
+                createdAt: true,
+            },
+        });
+        if (basicUser) {
+            user = {
+                ...basicUser,
+                nameRu: null,
+                image: null,
+                university: null,
+                city: null,
+                bio: null,
+                telegram: null,
+            };
+        }
+    }
 
     if (!user) {
         redirect(`/${locale}/login`);

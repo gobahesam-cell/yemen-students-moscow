@@ -14,62 +14,84 @@ function clearCookie(res: NextResponse, path: string) {
 }
 
 export async function POST(req: Request) {
-  const { email, password } = await req.json();
+  try {
+    const { email, password } = await req.json();
 
-  if (!email || !password) {
-    return NextResponse.json({ error: "Missing email or password" }, { status: 400 });
-  }
-
-  const user = await prisma.user.findUnique({
-    where: { email },
-    select: {
-      id: true,
-      email: true,
-      passwordHash: true,
-      role: true,
-      name: true,
-      nameRu: true,
+    if (!email || !password) {
+      return NextResponse.json({ error: "Missing email or password" }, { status: 400 });
     }
-  });
-  if (!user) {
-    return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+
+    // محاولة جلب المستخدم مع كل الحقول
+    let user: any;
+    try {
+      user = await prisma.user.findUnique({
+        where: { email },
+        select: {
+          id: true,
+          email: true,
+          passwordHash: true,
+          role: true,
+          name: true,
+          nameRu: true,
+        }
+      });
+    } catch {
+      // إذا فشل (عمود nameRu غير موجود)، جلب الأساسيات فقط
+      user = await prisma.user.findUnique({
+        where: { email },
+        select: {
+          id: true,
+          email: true,
+          passwordHash: true,
+          role: true,
+          name: true,
+        }
+      });
+    }
+
+    if (!user) {
+      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+    }
+
+    const ok = await bcrypt.compare(password, user.passwordHash);
+    if (!ok) {
+      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+    }
+
+    // ✅ مدة الجلسة 7 أيام
+    const now = Math.floor(Date.now() / 1000);
+    const exp = now + 7 * 24 * 60 * 60;
+
+    const token = await encodeSession({
+      userId: user.id,
+      role: user.role,
+      email: user.email,
+      name: user.name,
+      nameRu: user.nameRu || null,
+      exp,
+    });
+
+    const res = NextResponse.json({ ok: true, role: user.role });
+
+    // ✅ تنظيف أي كوكي قديمة بنفس الاسم على Paths مختلفة
+    clearCookie(res, "/admin");
+    clearCookie(res, "/ar/admin");
+    clearCookie(res, "/ru/admin");
+    clearCookie(res, "/api");
+    clearCookie(res, "/api/auth");
+
+    // ✅ تثبيت الكوكي الجديدة على Path=/ (مهم)
+    res.cookies.set(COOKIE_NAME, token, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",                 // ✅ هذا المطلوب
+      maxAge: 7 * 24 * 60 * 60,
+    });
+
+    return res;
+  } catch (error) {
+    console.error("Login Error:", error);
+    return NextResponse.json({ error: "خطأ في الخادم" }, { status: 500 });
   }
-
-  const ok = await bcrypt.compare(password, user.passwordHash);
-  if (!ok) {
-    return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
-  }
-
-  // ✅ مدة الجلسة 7 أيام
-  const now = Math.floor(Date.now() / 1000);
-  const exp = now + 7 * 24 * 60 * 60;
-
-  const token = await encodeSession({
-    userId: user.id,
-    role: user.role,
-    email: user.email,
-    name: user.name,
-    nameRu: user.nameRu,
-    exp,
-  });
-
-  const res = NextResponse.json({ ok: true, role: user.role });
-
-  // ✅ تنظيف أي كوكي قديمة بنفس الاسم على Paths مختلفة
-  clearCookie(res, "/admin");
-  clearCookie(res, "/ar/admin");
-  clearCookie(res, "/ru/admin");
-  clearCookie(res, "/api");
-  clearCookie(res, "/api/auth");
-
-  // ✅ تثبيت الكوكي الجديدة على Path=/ (مهم)
-  res.cookies.set(COOKIE_NAME, token, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",                 // ✅ هذا المطلوب
-    maxAge: 7 * 24 * 60 * 60,
-  });
-
-  return res;
 }
