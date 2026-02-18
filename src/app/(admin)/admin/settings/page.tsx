@@ -5,7 +5,8 @@ import {
   Settings, Palette, Globe, Shield, Bell, Database,
   Moon, Sun, Save, Loader2, Check, Eye, EyeOff,
   Download, Mail, Smartphone, MessageSquare, Lock,
-  ChevronDown, ChevronUp, AlertTriangle, RefreshCw
+  ChevronDown, ChevronUp, AlertTriangle, RefreshCw,
+  Phone, Send, Facebook, Youtube, Instagram, Share2
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "next-themes";
@@ -119,6 +120,15 @@ export default function AdminSettingsPage() {
   // Data export
   const [exportLoading, setExportLoading] = useState<string | null>(null);
 
+  // Contact & Social settings
+  const [contactData, setContactData] = useState({
+    phone: "", email: "", whatsapp: "", telegram: "",
+    facebook: "", youtube: "", instagram: "",
+  });
+  const [contactLoading, setContactLoading] = useState(true);
+  const [contactSaving, setContactSaving] = useState(false);
+  const [contactSaved, setContactSaved] = useState(false);
+
   useEffect(() => {
     setMounted(true);
     // Load notification prefs from localStorage
@@ -126,6 +136,12 @@ export default function AdminSettingsPage() {
     if (saved) {
       try { setNotifPrefs(JSON.parse(saved)); } catch { }
     }
+    // Load contact settings from API
+    fetch("/api/admin/site-settings")
+      .then(r => r.json())
+      .then(d => { if (d && !d.error) setContactData(prev => ({ ...prev, ...d })); })
+      .catch(() => { })
+      .finally(() => setContactLoading(false));
   }, []);
 
   const toggleSection = (key: string) => {
@@ -435,6 +451,73 @@ export default function AdminSettingsPage() {
             )}
           </button>
         </div>
+      </SectionCard>
+
+      {/* ═══════════════════ CONTACT & SOCIAL ═══════════════════ */}
+      <SectionCard
+        title={isRTL ? "بيانات التواصل والسوشيال ميديا" : "Контакты и социальные сети"}
+        desc={isRTL ? "أرقام الهاتف والبريد وحسابات التواصل" : "Телефон, почта и соцсети"}
+        icon={Share2}
+        color="from-cyan-500 to-blue-500"
+        open={openSections.contact ?? false}
+        onToggle={() => toggleSection("contact")}
+      >
+        {contactLoading ? (
+          <div className="flex justify-center py-8"><Loader2 className="animate-spin text-slate-400" size={24} /></div>
+        ) : (
+          <div className="space-y-4">
+            {[
+              { key: "phone", icon: Phone, label: isRTL ? "رقم الهاتف" : "Телефон", placeholder: "+7 999 123 45 67", dir: "ltr" },
+              { key: "email", icon: Mail, label: isRTL ? "البريد الإلكتروني" : "Эл. почта", placeholder: "info@example.com", dir: "ltr" },
+              { key: "whatsapp", icon: Phone, label: "WhatsApp", placeholder: "+7 999 123 45 67", dir: "ltr" },
+              { key: "telegram", icon: Send, label: "Telegram", placeholder: "@username", dir: "ltr" },
+              { key: "facebook", icon: Facebook, label: "Facebook", placeholder: "https://facebook.com/...", dir: "ltr" },
+              { key: "youtube", icon: Youtube, label: "YouTube", placeholder: "https://youtube.com/@...", dir: "ltr" },
+              { key: "instagram", icon: Instagram, label: "Instagram", placeholder: "@username", dir: "ltr" },
+            ].map((field) => (
+              <div key={field.key} className="space-y-1.5">
+                <label className="text-sm font-bold text-slate-600 dark:text-slate-400 flex items-center gap-2">
+                  <field.icon size={14} />
+                  {field.label}
+                </label>
+                <input
+                  type="text"
+                  dir={field.dir}
+                  value={(contactData as any)[field.key] || ""}
+                  onChange={(e) => setContactData({ ...contactData, [field.key]: e.target.value })}
+                  className="w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all text-sm"
+                  placeholder={field.placeholder}
+                />
+              </div>
+            ))}
+
+            <button
+              onClick={async () => {
+                setContactSaving(true);
+                try {
+                  await fetch("/api/admin/site-settings", {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(contactData),
+                  });
+                  setContactSaved(true);
+                  setTimeout(() => setContactSaved(false), 2000);
+                } catch { }
+                setContactSaving(false);
+              }}
+              disabled={contactSaving}
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-cyan-500 hover:bg-cyan-600 disabled:bg-slate-300 text-white rounded-xl font-bold transition-all mt-2"
+            >
+              {contactSaving ? (
+                <><Loader2 className="animate-spin" size={18} /> {isRTL ? "جارِ الحفظ..." : "Сохранение..."}</>
+              ) : contactSaved ? (
+                <><Check size={18} /> {isRTL ? "تم الحفظ" : "Сохранено"}</>
+              ) : (
+                <><Save size={18} /> {isRTL ? "حفظ بيانات التواصل" : "Сохранить контакты"}</>
+              )}
+            </button>
+          </div>
+        )}
       </SectionCard>
 
       {/* ═══════════════════ DATA EXPORT ═══════════════════ */}

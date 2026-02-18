@@ -1,10 +1,29 @@
 import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
 import { navItems } from "@/components/navItems";
+import { prisma } from "@/lib/db";
+
+interface ContactSettings {
+  phone?: string;
+  email?: string;
+  whatsapp?: string;
+  telegram?: string;
+  facebook?: string;
+  youtube?: string;
+  instagram?: string;
+}
+
+async function getContactSettings(): Promise<ContactSettings> {
+  try {
+    const row = await prisma.siteSettings.findUnique({ where: { id: "main" } });
+    return row ? JSON.parse(row.data) : {};
+  } catch {
+    return {};
+  }
+}
 
 export default async function Footer() {
   const locale = (await getLocale()) as "ar" | "ru";
-
   const tNav = await getTranslations("Nav");
   let tFooter: (key: string) => string;
   try {
@@ -13,6 +32,8 @@ export default async function Footer() {
     tFooter = tNav;
   }
 
+  const contact = await getContactSettings();
+
   const links = navItems.map((it) => ({
     href: `/${locale}${it.path === "" ? "/" : it.path}`,
     label: tNav(it.key),
@@ -20,11 +41,27 @@ export default async function Footer() {
 
   const year = new Date().getFullYear();
   const isRTL = locale === "ar";
-
   const title = locale === "ar" ? "الجالية اليمنية - موسكو" : "Йеменская община — Москва";
   const desc = locale === "ar"
     ? "منصة الجالية: أخبار، فعاليات، معرض، ودورات تعليمية للطلاب."
     : "Платформа сообщества: новости, события, галерея и обучающие курсы.";
+
+  // Social links
+  const socials = [
+    contact.telegram && { label: "Telegram", href: contact.telegram.startsWith("http") ? contact.telegram : `https://t.me/${contact.telegram.replace("@", "")}`, emoji: "✈️" },
+    contact.whatsapp && { label: "WhatsApp", href: `https://wa.me/${contact.whatsapp.replace(/[^0-9+]/g, "")}`, emoji: "💬" },
+    contact.instagram && { label: "Instagram", href: contact.instagram.startsWith("http") ? contact.instagram : `https://instagram.com/${contact.instagram.replace("@", "")}`, emoji: "📸" },
+    contact.facebook && { label: "Facebook", href: contact.facebook.startsWith("http") ? contact.facebook : `https://facebook.com/${contact.facebook}`, emoji: "👤" },
+    contact.youtube && { label: "YouTube", href: contact.youtube.startsWith("http") ? contact.youtube : `https://youtube.com/${contact.youtube}`, emoji: "🎬" },
+  ].filter(Boolean) as { label: string; href: string; emoji: string }[];
+
+  // Fallback if no socials configured
+  if (socials.length === 0) {
+    socials.push(
+      { label: "Telegram", href: "#", emoji: "✈️" },
+      { label: "WhatsApp", href: "#", emoji: "💬" },
+    );
+  }
 
   return (
     <footer dir={isRTL ? "rtl" : "ltr"} className="mt-20 border-t border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white transition-colors duration-300">
@@ -37,17 +74,19 @@ export default async function Footer() {
               <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400 max-w-xs">{desc}</p>
             </div>
 
-            {/* Social placeholders */}
+            {/* Social links */}
             <div className="flex flex-wrap gap-2">
-              {["Telegram", "WhatsApp", "Email"].map((label) => (
+              {socials.map((s) => (
                 <a
-                  key={label}
-                  href="#"
+                  key={s.label}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white transition"
-                  aria-label={label}
+                  aria-label={s.label}
                 >
-                  <span className="h-2 w-2 rounded-full bg-yellow-500/50" />
-                  {label}
+                  <span>{s.emoji}</span>
+                  {s.label}
                 </a>
               ))}
             </div>
@@ -79,18 +118,22 @@ export default async function Footer() {
             </div>
 
             <div className="mt-4 space-y-3 text-sm text-slate-600 dark:text-slate-400">
-              <div className="flex items-center gap-3">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-200 dark:bg-white/5 text-yellow-600 dark:text-yellow-500">
-                  📧
-                </span>
-                <span>placeholder@email.com</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-200 dark:bg-white/5 text-yellow-600 dark:text-yellow-500">
-                  📞
-                </span>
-                <span dir="ltr">+7 000 000 00 00</span>
-              </div>
+              {contact.email && (
+                <div className="flex items-center gap-3">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-200 dark:bg-white/5 text-yellow-600 dark:text-yellow-500">
+                    📧
+                  </span>
+                  <a href={`mailto:${contact.email}`} className="hover:text-yellow-600 transition">{contact.email}</a>
+                </div>
+              )}
+              {contact.phone && (
+                <div className="flex items-center gap-3">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-200 dark:bg-white/5 text-yellow-600 dark:text-yellow-500">
+                    📞
+                  </span>
+                  <a href={`tel:${contact.phone}`} dir="ltr" className="hover:text-yellow-600 transition">{contact.phone}</a>
+                </div>
+              )}
               <div className="flex items-center gap-3">
                 <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-200 dark:bg-white/5 text-yellow-600 dark:text-yellow-500">
                   📍

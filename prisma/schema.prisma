@@ -305,3 +305,12 @@ model PaymentMethod {
 
   @@map("payment_methods")
 }
+
+// ==================== إعدادات الموقع ====================
+
+model SiteSettings {
+  id   String @id @default("main")
+  data String // JSON: {phone, email, whatsapp, telegram, facebook, youtube, instagram}
+
+  @@map("site_settings")
+}
