@@ -128,7 +128,7 @@ export default function Hero() {
                                 className="group inline-flex items-center gap-2 px-7 py-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl text-slate-900 dark:text-white font-bold hover:border-rose-300 dark:hover:border-rose-500/30 hover:shadow-lg transition-all duration-300"
                             >
                                 <Heart size={18} className="text-rose-500" />
-                                {locale === "ar" ? "تبرع الآن" : "Пожертвовать"}
+                                {locale === "ar" ? "ادعم الجالية" : "Поддержать"}
                             </Link>
                         </motion.div>
 

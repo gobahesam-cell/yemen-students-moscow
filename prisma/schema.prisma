@@ -288,3 +288,20 @@ model Photo {
   @@map("photos")
 }
 
+// ==================== نظام الدعم ووسائل الدفع ====================
+
+model PaymentMethod {
+  id            String   @id @default(cuid())
+  name          String                    // اسم البنك بالعربية
+  nameRu        String?                   // اسم البنك بالروسية
+  accountNumber String                    // رقم الحساب أو البطاقة
+  holderName    String?                   // اسم صاحب الحساب بالعربية
+  holderNameRu  String?                   // اسم صاحب الحساب بالروسية
+  qrCodeImage   String?                   // رابط صورة QR Code (Cloudinary)
+  sortOrder     Int      @default(0)      // ترتيب العرض
+  isActive      Boolean  @default(true)   // هل النشط
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("payment_methods")
+}

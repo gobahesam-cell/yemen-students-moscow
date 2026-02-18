@@ -19,7 +19,8 @@ import {
     LogOut,
     Menu,
     X,
-    Search
+    Search,
+    Heart
 } from "lucide-react";
 import { logoutAction } from "@/app/actions/auth";
 import { AdminSearch } from "./AdminSearch";
@@ -31,6 +32,7 @@ const NAV_ITEMS = [
     { href: "/admin/courses", labelKey: "nav.courses", icon: GraduationCap },
     { href: "/admin/members", labelKey: "nav.members", icon: Users },
     { href: "/admin/media", labelKey: "nav.media", icon: ImageIcon },
+    { href: "/admin/support", labelKey: "nav.support", icon: Heart },
     { href: "/admin/settings", labelKey: "nav.settings", icon: Settings },
 ];
 
