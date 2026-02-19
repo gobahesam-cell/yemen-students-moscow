@@ -3,8 +3,9 @@
 import { motion } from "framer-motion";
 import {
     Target, Star, Users, GraduationCap, Heart,
-    BookOpen, Globe, Sparkles, ArrowRight, Megaphone,
-    HandHeart, Building2
+    BookOpen, Globe, Sparkles, ArrowRight, Handshake,
+    HeadphonesIcon, CalendarDays, Lightbulb, Building2,
+    Trophy, TrendingUp, Award, Network
 } from "lucide-react";
 import Link from "next/link";
 
@@ -19,43 +20,117 @@ export default function AboutPageClient({ locale }: { locale: "ar" | "ru" }) {
 
     const goals = locale === "ar"
         ? [
-            { icon: Megaphone, text: "تنظيم الفعاليات والأنشطة الطلابية", color: "blue" },
-            { icon: Users, text: "تسهيل التواصل بين الطلاب والإدارة", color: "green" },
-            { icon: BookOpen, text: "تقديم محتوى تعليمي وإرشادي", color: "purple" },
-            { icon: Globe, text: "نشر الأخبار والإعلانات الرسمية", color: "orange" },
-            { icon: HandHeart, text: "دعم الطلاب المحتاجين ومساعدتهم", color: "rose" },
-            { icon: Building2, text: "تمثيل الجالية لدى الجهات الرسمية", color: "cyan" },
+            { icon: Handshake, text: "تعزيز الروابط الاجتماعية بين أبناء الجالية.", color: "blue" },
+            { icon: Users, text: "دعم الطلاب والمقيمين وتسهيل شؤونهم.", color: "green" },
+            { icon: BookOpen, text: "الحفاظ على الهوية اليمنية واللغة العربية.", color: "purple" },
+            { icon: Globe, text: "بناء علاقات إيجابية مع المجتمع الروسي.", color: "orange" },
+            { icon: Building2, text: "التعاون مع الجهات الرسمية لخدمة أبناء الجالية.", color: "rose" },
+            { icon: Lightbulb, text: "نشر الوعي بالقوانين واللوائح المحلية.", color: "cyan" },
         ]
         : [
-            { icon: Megaphone, text: "Организация студенческих мероприятий", color: "blue" },
-            { icon: Users, text: "Содействие общению между студентами и администрацией", color: "green" },
-            { icon: BookOpen, text: "Предоставление образовательного контента", color: "purple" },
-            { icon: Globe, text: "Публикация официальных новостей и объявлений", color: "orange" },
-            { icon: HandHeart, text: "Поддержка нуждающихся студентов", color: "rose" },
-            { icon: Building2, text: "Представление общины в официальных органах", color: "cyan" },
+            { icon: Handshake, text: "Укрепление социальных связей между членами общины.", color: "blue" },
+            { icon: Users, text: "Поддержка студентов и резидентов, содействие в их делах.", color: "green" },
+            { icon: BookOpen, text: "Сохранение йеменской идентичности и арабского языка.", color: "purple" },
+            { icon: Globe, text: "Построение позитивных отношений с российским обществом.", color: "orange" },
+            { icon: Building2, text: "Сотрудничество с официальными органами для обслуживания общины.", color: "rose" },
+            { icon: Lightbulb, text: "Повышение осведомлённости о местных законах и правилах.", color: "cyan" },
         ];
 
-    const values = locale === "ar"
+    const services = locale === "ar"
         ? [
-            { icon: "🤝", label: "التعاون" },
-            { icon: "🔍", label: "الشفافية" },
-            { icon: "💎", label: "الاحترام" },
-            { icon: "⚡", label: "المسؤولية" },
-            { icon: "🌟", label: "التميّز" },
-            { icon: "❤️", label: "الانتماء" },
+            {
+                icon: HeadphonesIcon,
+                title: "الإرشاد والدعم",
+                desc: "المساعدة في تذليل الصعوبات التي تواجه أفراد الجالية. تقديم التوجيه والدعم ضمن الإمكانيات المتاحة.",
+                btn: "اطلب المساعدة",
+                href: "/ar/contact",
+                color: "from-rose-500 to-pink-500",
+                bg: "bg-rose-50 dark:bg-rose-500/5 border-rose-200 dark:border-rose-500/20",
+            },
+            {
+                icon: CalendarDays,
+                title: "الأنشطة الثقافية والاجتماعية",
+                desc: "تنظيم فعاليات ثقافية وفنية واجتماعية ورياضية. تعزيز روح الانتماء والتواصل بين أبناء الجالية.",
+                btn: "عرض الفعاليات",
+                href: "/ar/events",
+                color: "from-violet-500 to-purple-500",
+                bg: "bg-violet-50 dark:bg-violet-500/5 border-violet-200 dark:border-violet-500/20",
+            },
+            {
+                icon: GraduationCap,
+                title: "التعليم والتطوير",
+                desc: "دورات تدريبية وورش عمل متنوعة. دعم تعليم اللغة العربية والحفاظ على الهوية الثقافية.",
+                btn: "ابدأ التعلم",
+                href: "/ar/courses",
+                color: "from-blue-500 to-cyan-500",
+                bg: "bg-blue-50 dark:bg-blue-500/5 border-blue-200 dark:border-blue-500/20",
+            },
+            {
+                icon: Network,
+                title: "العلاقات والتواصل",
+                desc: "بناء جسور تواصل مع المجتمع الروسي والجاليات الأخرى. التنسيق مع الجهات الرسمية والدبلوماسية لخدمة أبناء الجالية.",
+                btn: "تواصل معنا",
+                href: "/ar/contact",
+                color: "from-emerald-500 to-green-500",
+                bg: "bg-emerald-50 dark:bg-emerald-500/5 border-emerald-200 dark:border-emerald-500/20",
+            },
         ]
         : [
-            { icon: "🤝", label: "Сотрудничество" },
-            { icon: "🔍", label: "Прозрачность" },
-            { icon: "💎", label: "Уважение" },
-            { icon: "⚡", label: "Ответственность" },
-            { icon: "🌟", label: "Качество" },
-            { icon: "❤️", label: "Принадлежность" },
+            {
+                icon: HeadphonesIcon,
+                title: "Консультации и поддержка",
+                desc: "Помощь в преодолении трудностей, с которыми сталкиваются члены общины. Консультации и поддержка в рамках имеющихся возможностей.",
+                btn: "Обратиться за помощью",
+                href: "/ru/contact",
+                color: "from-rose-500 to-pink-500",
+                bg: "bg-rose-50 dark:bg-rose-500/5 border-rose-200 dark:border-rose-500/20",
+            },
+            {
+                icon: CalendarDays,
+                title: "Культурные и социальные мероприятия",
+                desc: "Организация культурных, художественных, социальных и спортивных мероприятий. Укрепление духа единства среди членов общины.",
+                btn: "Посмотреть мероприятия",
+                href: "/ru/events",
+                color: "from-violet-500 to-purple-500",
+                bg: "bg-violet-50 dark:bg-violet-500/5 border-violet-200 dark:border-violet-500/20",
+            },
+            {
+                icon: GraduationCap,
+                title: "Образование и развитие",
+                desc: "Тренинги и разнообразные мастер-классы. Поддержка обучения арабскому языку и сохранения культурной идентичности.",
+                btn: "Начать обучение",
+                href: "/ru/courses",
+                color: "from-blue-500 to-cyan-500",
+                bg: "bg-blue-50 dark:bg-blue-500/5 border-blue-200 dark:border-blue-500/20",
+            },
+            {
+                icon: Network,
+                title: "Связи и коммуникация",
+                desc: "Построение мостов сотрудничества с российским обществом и другими общинами. Координация с официальными и дипломатическими органами.",
+                btn: "Связаться с нами",
+                href: "/ru/contact",
+                color: "from-emerald-500 to-green-500",
+                bg: "bg-emerald-50 dark:bg-emerald-500/5 border-emerald-200 dark:border-emerald-500/20",
+            },
+        ];
+
+    const achievements = locale === "ar"
+        ? [
+            { icon: Users, text: "مجتمع متنامٍ من الأعضاء المسجلين." },
+            { icon: CalendarDays, text: "تنظيم فعاليات ثقافية واجتماعية ورياضية بشكل مستمر." },
+            { icon: GraduationCap, text: "تنفيذ برامج تدريبية وتوعوية تخدم أبناء الجالية." },
+            { icon: Network, text: "توسيع شبكة العلاقات والتعاون مع مؤسسات مختلفة." },
+        ]
+        : [
+            { icon: Users, text: "Растущее сообщество зарегистрированных членов." },
+            { icon: CalendarDays, text: "Регулярная организация культурных, социальных и спортивных мероприятий." },
+            { icon: GraduationCap, text: "Реализация обучающих и просветительских программ для членов общины." },
+            { icon: Network, text: "Расширение сети связей и сотрудничества с различными организациями." },
         ];
 
     const stats = [
         { value: "2019", label: locale === "ar" ? "سنة التأسيس" : "Год основания" },
-        { value: "500+", label: locale === "ar" ? "طالب وطالبة" : "Студентов" },
+        { value: "500+", label: locale === "ar" ? "عضو مسجل" : "Участников" },
         { value: "50+", label: locale === "ar" ? "فعالية سنوية" : "Мероприятий в год" },
         { value: "10+", label: locale === "ar" ? "جامعة" : "Университетов" },
     ];
@@ -111,8 +186,8 @@ export default function AboutPageClient({ locale }: { locale: "ar" | "ru" }) {
                         className="text-lg md:text-xl text-blue-100/80 max-w-2xl mx-auto mb-12 leading-relaxed"
                     >
                         {locale === "ar"
-                            ? "نحن مجتمع طلابي يمني في موسكو، نعمل على تعزيز التواصل وتقديم الدعم والخدمات للطلاب اليمنيين في روسيا."
-                            : "Мы — йеменское студенческое сообщество в Москве, содействующее общению и оказывающее поддержку йеменским студентам в России."
+                            ? "تسعى الجالية اليمنية في موسكو إلى خدمة أبنائها وتعزيز روابط الأخوة بينهم، من خلال برامج اجتماعية وثقافية وتعليمية تسهم في دعمهم وحماية مصالحهم."
+                            : "Йеменская община в Москве стремится служить своим членам и укреплять братские связи через социальные, культурные и образовательные программы."
                         }
                     </motion.p>
 
@@ -133,68 +208,26 @@ export default function AboutPageClient({ locale }: { locale: "ar" | "ru" }) {
                 </div>
             </section>
 
-            {/* ═══════════════════ MISSION ═══════════════════ */}
+            {/* ═══════════════════ GOALS ═══════════════════ */}
             <section className="py-20">
                 <div className="container mx-auto px-4 max-w-5xl">
-                    <div className="grid md:grid-cols-2 gap-12 items-center">
-                        <motion.div {...fadeUp}>
-                            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-yellow-50 dark:bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 rounded-full text-sm font-bold mb-4 border border-yellow-200 dark:border-yellow-500/20">
-                                <Target size={14} />
-                                {locale === "ar" ? "رسالتنا" : "Наша миссия"}
-                            </div>
-                            <h2 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-6 leading-tight">
-                                {locale === "ar"
-                                    ? "خدمة الطلاب اليمنيين وتمثيلهم"
-                                    : "Служение йеменским студентам"
-                                }
-                            </h2>
-                            <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
-                                {locale === "ar"
-                                    ? "نسعى لخدمة الطلاب اليمنيين في موسكو من خلال تنظيم الفعاليات، توفير المعلومات الموثوقة، وتسهيل التواصل مع الجهات الرسمية. هدفنا بناء مجتمع طلابي متماسك يدعم بعضه البعض."
-                                    : "Мы стремимся служить йеменским студентам в Москве через организацию мероприятий, предоставление достоверной информации и содействие общению с официальными органами. Наша цель — построить сплочённое студенческое сообщество."
-                                }
-                            </p>
-                        </motion.div>
-
-                        <motion.div
-                            {...fadeUp}
-                            transition={{ delay: 0.2 }}
-                            className="relative"
-                        >
-                            <div className="bg-gradient-to-br from-yellow-50 to-blue-50 dark:from-yellow-500/5 dark:to-blue-500/5 rounded-3xl p-8 border border-slate-200 dark:border-slate-800">
-                                <div className="grid grid-cols-2 gap-4">
-                                    {[
-                                        { icon: GraduationCap, label: locale === "ar" ? "تعليم" : "Образование", color: "text-blue-500" },
-                                        { icon: Heart, label: locale === "ar" ? "دعم" : "Поддержка", color: "text-rose-500" },
-                                        { icon: Users, label: locale === "ar" ? "مجتمع" : "Сообщество", color: "text-green-500" },
-                                        { icon: Star, label: locale === "ar" ? "تميّز" : "Качество", color: "text-amber-500" },
-                                    ].map((item, i) => (
-                                        <div key={i} className="bg-white dark:bg-slate-900 rounded-2xl p-5 text-center shadow-sm border border-slate-100 dark:border-slate-800">
-                                            <item.icon className={`mx-auto ${item.color} mb-2`} size={32} />
-                                            <span className="text-sm font-bold text-slate-700 dark:text-slate-300">{item.label}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </motion.div>
-                    </div>
-                </div>
-            </section>
-
-            {/* ═══════════════════ GOALS ═══════════════════ */}
-            <section className="py-20 bg-slate-50 dark:bg-slate-900/50">
-                <div className="container mx-auto px-4 max-w-5xl">
-                    <motion.div {...fadeUp} className="text-center mb-14">
+                    <motion.div {...fadeUp} className="text-center mb-6">
                         <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 rounded-full text-sm font-bold mb-4 border border-blue-200 dark:border-blue-500/20">
                             <Target size={14} />
-                            {locale === "ar" ? "أهدافنا" : "Наши цели"}
+                            {locale === "ar" ? "أهداف الجالية" : "Цели общины"}
                         </div>
-                        <h2 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white">
-                            {locale === "ar" ? "ماذا نسعى لتحقيقه؟" : "К чему мы стремимся?"}
+                        <h2 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-4">
+                            {locale === "ar" ? "نعمل من أجل مجتمع متماسك وهوية راسخة" : "Работаем ради сплочённого общества и крепкой идентичности"}
                         </h2>
+                        <p className="text-lg text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
+                            {locale === "ar"
+                                ? "تسعى الجالية اليمنية في موسكو إلى خدمة أبناء الجالية وتعزيز روابط الأخوة بينهم، من خلال برامج اجتماعية وثقافية وتعليمية تسهم في دعمهم، وحماية مصالحهم، وتعزيز اندماجهم الإيجابي في المجتمع الروسي مع الحفاظ على الهوية اليمنية."
+                                : "Йеменская община в Москве стремится служить членам общины и укреплять братские связи через социальные, культурные и образовательные программы, которые способствуют их поддержке, защите их интересов и позитивной интеграции в российское общество при сохранении йеменской идентичности."
+                            }
+                        </p>
                     </motion.div>
 
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 mt-10">
                         {goals.map((goal, i) => (
                             <motion.div
                                 key={i}
@@ -218,31 +251,92 @@ export default function AboutPageClient({ locale }: { locale: "ar" | "ru" }) {
                 </div>
             </section>
 
-            {/* ═══════════════════ VALUES ═══════════════════ */}
-            <section className="py-20">
-                <div className="container mx-auto px-4 max-w-4xl">
-                    <motion.div {...fadeUp} className="text-center mb-14">
-                        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 rounded-full text-sm font-bold mb-4 border border-green-200 dark:border-green-500/20">
+            {/* ═══════════════════ SERVICES ═══════════════════ */}
+            <section className="py-20 bg-slate-50 dark:bg-slate-900/50">
+                <div className="container mx-auto px-4 max-w-5xl">
+                    <motion.div {...fadeUp} className="text-center mb-6">
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-violet-50 dark:bg-violet-500/10 text-violet-700 dark:text-violet-400 rounded-full text-sm font-bold mb-4 border border-violet-200 dark:border-violet-500/20">
                             <Star size={14} />
-                            {locale === "ar" ? "قيمنا" : "Наши ценности"}
+                            {locale === "ar" ? "خدماتنا" : "Наши услуги"}
                         </div>
-                        <h2 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white">
-                            {locale === "ar" ? "المبادئ التي نؤمن بها" : "Принципы, в которые мы верим"}
+                        <h2 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-4">
+                            {locale === "ar" ? "خدمات عملية تخدم أفراد الجالية" : "Практические услуги для членов общины"}
                         </h2>
+                        <p className="text-lg text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
+                            {locale === "ar"
+                                ? "تعمل الجالية على تقديم خدمات متنوعة تغطي الجوانب الاجتماعية والثقافية والتعليمية والإرشادية، بما يساعد أبناء الجالية على الاستقرار والنجاح في بيئة الدراسة والعمل داخل روسيا."
+                                : "Община предоставляет разнообразные услуги, охватывающие социальные, культурные, образовательные и консультационные аспекты, помогая членам общины в стабильности и успехе в учебной и рабочей среде в России."
+                            }
+                        </p>
                     </motion.div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        {values.map((v, i) => (
+                    <div className="grid md:grid-cols-2 gap-6 mt-10">
+                        {services.map((service, i) => (
                             <motion.div
                                 key={i}
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                whileInView={{ opacity: 1, scale: 1 }}
-                                transition={{ delay: i * 0.07 }}
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                transition={{ delay: i * 0.1 }}
                                 viewport={{ once: true }}
-                                className="bg-white dark:bg-slate-900 rounded-2xl p-6 text-center border border-slate-200 dark:border-slate-800 hover:border-yellow-300 dark:hover:border-yellow-500/30 hover:shadow-lg transition-all group cursor-default"
+                                className={`p-6 rounded-3xl border ${service.bg} hover:shadow-lg transition-all`}
                             >
-                                <span className="text-4xl block mb-3 group-hover:scale-110 transition-transform">{v.icon}</span>
-                                <span className="font-black text-slate-800 dark:text-white text-lg">{v.label}</span>
+                                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${service.color} flex items-center justify-center text-white mb-4`}>
+                                    <service.icon size={24} />
+                                </div>
+                                <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2">
+                                    {service.title}
+                                </h3>
+                                <p className="text-slate-600 dark:text-slate-400 leading-relaxed mb-4 text-sm">
+                                    {service.desc}
+                                </p>
+                                <Link
+                                    href={service.href}
+                                    className={`inline-flex items-center gap-2 text-sm font-bold bg-gradient-to-r ${service.color} bg-clip-text text-transparent hover:opacity-80 transition-opacity`}
+                                >
+                                    {service.btn}
+                                    <ArrowRight size={14} className={`text-current ${isRTL ? "rotate-180" : ""}`} />
+                                </Link>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* ═══════════════════ ACHIEVEMENTS ═══════════════════ */}
+            <section className="py-20">
+                <div className="container mx-auto px-4 max-w-5xl">
+                    <motion.div {...fadeUp} className="text-center mb-6">
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 rounded-full text-sm font-bold mb-4 border border-amber-200 dark:border-amber-500/20">
+                            <Trophy size={14} />
+                            {locale === "ar" ? "إنجازاتنا" : "Наши достижения"}
+                        </div>
+                        <h2 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-4">
+                            {locale === "ar" ? "محطات نفخر بها" : "Вехи, которыми мы гордимся"}
+                        </h2>
+                        <p className="text-lg text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
+                            {locale === "ar"
+                                ? "تمكنت الجالية اليمنية في موسكو من تحقيق إنجازات ملموسة عبر العمل الجماعي والمشاركة الفاعلة، من خلال تنظيم الأنشطة، دعم الطلاب، وتطوير المبادرات التي تعزز حضور المجتمع اليمني وتخدم أفراده."
+                                : "Йеменская община в Москве смогла добиться ощутимых достижений благодаря коллективной работе и активному участию: организация мероприятий, поддержка студентов и развитие инициатив, укрепляющих присутствие йеменского сообщества."
+                            }
+                        </p>
+                    </motion.div>
+
+                    <div className="grid md:grid-cols-2 gap-5 mt-10">
+                        {achievements.map((item, i) => (
+                            <motion.div
+                                key={i}
+                                initial={{ opacity: 0, x: i % 2 === 0 ? -20 : 20 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                transition={{ delay: i * 0.1 }}
+                                viewport={{ once: true }}
+                                className="flex items-start gap-4 p-5 bg-amber-50/50 dark:bg-amber-500/5 rounded-2xl border border-amber-200/50 dark:border-amber-500/10"
+                            >
+                                <div className="p-2.5 rounded-xl bg-amber-100 dark:bg-amber-500/15 text-amber-600 dark:text-amber-400 shrink-0">
+                                    <item.icon size={22} />
+                                </div>
+                                <p className="font-bold text-slate-800 dark:text-slate-200 leading-relaxed pt-1">
+                                    {item.text}
+                                </p>
                             </motion.div>
                         ))}
                     </div>
@@ -258,16 +352,16 @@ export default function AboutPageClient({ locale }: { locale: "ar" | "ru" }) {
                         </h2>
                         <p className="text-slate-600 dark:text-slate-400 mb-8">
                             {locale === "ar"
-                                ? "كن جزءاً من مجتمعنا وساهم في بناء مستقبل أفضل للطلاب اليمنيين في موسكو."
-                                : "Станьте частью нашего сообщества и помогите строить лучшее будущее для йеменских студентов в Москве."
+                                ? "كن جزءاً من مجتمعنا وساهم في بناء مستقبل أفضل للجالية اليمنية في موسكو."
+                                : "Станьте частью нашего сообщества и помогите строить лучшее будущее для йеменской общины в Москве."
                             }
                         </p>
                         <div className="flex flex-wrap justify-center gap-4">
                             <Link
-                                href={`/${locale}/contact`}
+                                href={`/${locale}/about`}
                                 className="inline-flex items-center gap-2 px-8 py-4 bg-yellow-500 hover:bg-yellow-400 text-black font-bold rounded-2xl transition-colors shadow-lg shadow-yellow-500/20"
                             >
-                                {locale === "ar" ? "تواصل معنا" : "Связаться с нами"}
+                                {locale === "ar" ? "اكتشف المزيد" : "Узнать больше"}
                                 <ArrowRight size={18} className={isRTL ? "rotate-180" : ""} />
                             </Link>
                             <Link
@@ -275,7 +369,7 @@ export default function AboutPageClient({ locale }: { locale: "ar" | "ru" }) {
                                 className="inline-flex items-center gap-2 px-8 py-4 bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-bold rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-yellow-400 transition-colors"
                             >
                                 <Heart size={18} className="text-rose-500" />
-                                {locale === "ar" ? "ادعم الجالية" : "Поддержать"}
+                                {locale === "ar" ? "ادعم أنشطتنا" : "Поддержать"}
                             </Link>
                         </div>
                     </motion.div>
