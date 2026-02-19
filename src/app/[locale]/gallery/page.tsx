@@ -3,7 +3,17 @@ import { getLocale, getTranslations } from "next-intl/server";
 import Link from "next/link";
 import Image from "next/image";
 import { ImageIcon, Calendar, FolderOpen } from "lucide-react";
+import { buildMetadata } from "@/lib/seo";
 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: "ar" | "ru" }>;
+}) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "SEO" });
+  return buildMetadata({ locale, path: "/gallery", title: t("galleryTitle"), description: t("galleryDesc") });
+}
 export default async function GalleryPage() {
   const locale = await getLocale();
   const isArabic = locale === "ar";

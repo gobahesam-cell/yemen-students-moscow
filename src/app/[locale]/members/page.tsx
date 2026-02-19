@@ -3,6 +3,17 @@ import { getLocale, getTranslations } from "next-intl/server";
 import Link from "next/link";
 import Image from "next/image";
 import { Users, GraduationCap, MapPin, Search, Filter } from "lucide-react";
+import { buildMetadata } from "@/lib/seo";
+
+export async function generateMetadata({
+    params,
+}: {
+    params: Promise<{ locale: "ar" | "ru" }>;
+}) {
+    const { locale } = await params;
+    const t = await getTranslations({ locale, namespace: "SEO" });
+    return buildMetadata({ locale, path: "/members", title: t("membersTitle"), description: t("membersDesc") });
+}
 
 // قوائم الجامعات والمدن
 const UNIVERSITIES: Record<string, { name: string; nameRu: string }> = {

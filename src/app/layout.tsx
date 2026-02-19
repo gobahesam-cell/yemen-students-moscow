@@ -4,8 +4,8 @@ import { Cairo, Inter } from "next/font/google";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Yemeni Community - Moscow",
-  description: "Community portal",
+  title: "الجالية اليمنية - موسكو",
+  description: "منصة الجالية اليمنية في موسكو: أخبار، فعاليات، معرض، ودورات تعليمية.",
 };
 
 const RTL_LOCALES = new Set(["ar"]);
