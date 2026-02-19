@@ -294,6 +294,8 @@
       "aiBilingual": "Двуязычная генерация"
     },
     "courseForm": {
+      "createNewCourse": "Создать новый курс",
+      "editCourse": "Редактировать курс",
       "saveEdits": "Сохранить изменения",
       "createCourse": "Создать курс",
       "saveError": "Ошибка сохранения",
@@ -553,6 +555,8 @@
       "email": "Электронная почта",
       "role": "Роль",
       "roleMember": "Участник",
+      "roleEditor": "Редактор",
+      "roleInstructor": "Преподаватель",
       "roleAdmin": "Администратор",
       "studyInfo": "Информация об учёбе",
       "universityLabel": "Университет",

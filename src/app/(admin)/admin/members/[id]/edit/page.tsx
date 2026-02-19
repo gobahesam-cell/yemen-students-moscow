@@ -276,6 +276,8 @@ export default function AdminMemberEditPage() {
                                             className="w-full h-14 bg-slate-50 dark:bg-white/5 border-2 border-transparent focus:border-emerald-500/20 rounded-2xl pr-12 pl-5 font-black transition-all outline-none appearance-none"
                                         >
                                             <option value="MEMBER">{t("roleMember")}</option>
+                                            <option value="EDITOR">{t("roleEditor")}</option>
+                                            <option value="INSTRUCTOR">{t("roleInstructor")}</option>
                                             <option value="ADMIN">{t("roleAdmin")}</option>
                                         </select>
                                     </div>

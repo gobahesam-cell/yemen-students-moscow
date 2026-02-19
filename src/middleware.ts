@@ -46,10 +46,11 @@ export default async function proxy(req: NextRequest) {
     }
 
     // ✅ قيود إضافية بناءً على المسار
-    const isUsersPath = pathname.includes("/admin/users");
-    if (isUsersPath && session.role !== "ADMIN") {
+    const ADMIN_ONLY_PATHS = ["/admin/users", "/admin/settings", "/admin/members", "/admin/support"];
+    const isAdminOnlyPath = ADMIN_ONLY_PATHS.some(p => pathname.includes(p));
+    if (isAdminOnlyPath && session.role !== "ADMIN") {
       const url = req.nextUrl.clone();
-      url.pathname = "/admin"; // تحويله للرئيسية في لوحة التحكم
+      url.pathname = "/admin";
       return NextResponse.redirect(url);
     }
 

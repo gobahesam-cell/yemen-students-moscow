@@ -61,12 +61,12 @@ export function AdminLayoutClient({
     const filteredItems = NAV_ITEMS.filter(item => {
         if (user?.role === "ADMIN") return true;
         if (user?.role === "EDITOR") {
-            return ["/admin", "/admin/posts", "/admin/events", "/admin/media", "/admin/settings"].includes(item.href);
+            return ["/admin", "/admin/posts", "/admin/events", "/admin/media"].includes(item.href);
         }
         if (user?.role === "INSTRUCTOR") {
-            return ["/admin", "/admin/courses", "/admin/media", "/admin/settings"].includes(item.href);
+            return ["/admin", "/admin/courses", "/admin/media"].includes(item.href);
         }
-        return item.href === "/admin" || item.href === "/admin/settings";
+        return item.href === "/admin";
     });
 
     if (!mounted) {

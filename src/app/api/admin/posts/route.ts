@@ -12,6 +12,19 @@ async function checkAuth() {
   return true;
 }
 
+export async function GET() {
+  if (!(await checkAuth())) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  try {
+    const posts = await prisma.post.findMany({ orderBy: { createdAt: "desc" } });
+    return NextResponse.json(posts);
+  } catch (error) {
+    console.error("Fetch Posts Error:", error);
+    return NextResponse.json({ error: "Failed to fetch posts" }, { status: 500 });
+  }
+}
+
 export async function POST(req: Request) {
   // ✅ حماية الـ API يدوياً
   if (!(await checkAuth())) {
