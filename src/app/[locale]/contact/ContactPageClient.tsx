@@ -12,6 +12,8 @@ interface ContactSettings {
     email?: string;
     whatsapp?: string;
     telegram?: string;
+    mapUrl?: string;
+    showMap?: boolean;
 }
 
 const fadeUp = {
@@ -264,30 +266,32 @@ export default function ContactPageClient({
                         {/* Info — 2 cols */}
                         <motion.div {...fadeUp} transition={{ delay: 0.2 }} className="lg:col-span-2 space-y-5">
                             {/* Location Card */}
-                            <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
-                                <div className="flex items-center gap-3 mb-4">
-                                    <div className="p-2.5 bg-rose-100 dark:bg-rose-500/10 rounded-xl text-rose-600 dark:text-rose-400">
-                                        <MapPin size={20} />
+                            {contact.showMap !== false && (
+                                <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <div className="p-2.5 bg-rose-100 dark:bg-rose-500/10 rounded-xl text-rose-600 dark:text-rose-400">
+                                            <MapPin size={20} />
+                                        </div>
+                                        <h3 className="font-bold text-slate-900 dark:text-white">
+                                            {locale === "ar" ? "الموقع" : "Местоположение"}
+                                        </h3>
                                     </div>
-                                    <h3 className="font-bold text-slate-900 dark:text-white">
-                                        {locale === "ar" ? "الموقع" : "Местоположение"}
-                                    </h3>
+                                    <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+                                        {locale === "ar" ? "موسكو، روسيا الاتحادية" : "Москва, Российская Федерация"}
+                                    </p>
+                                    {/* Map */}
+                                    <div className="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 h-44">
+                                        <iframe
+                                            src={contact.mapUrl || "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2245.2!2d37.6173!3d55.7558!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMCBNb3Njb3c!5e0!3m2!1sen!2sru!4v1"}
+                                            width="100%"
+                                            height="100%"
+                                            style={{ border: 0 }}
+                                            allowFullScreen
+                                            loading="lazy"
+                                        />
+                                    </div>
                                 </div>
-                                <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-                                    {locale === "ar" ? "موسكو، روسيا الاتحادية" : "Москва, Российская Федерация"}
-                                </p>
-                                {/* Map */}
-                                <div className="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 h-44">
-                                    <iframe
-                                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2245.2!2d37.6173!3d55.7558!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMCBNb3Njb3c!5e0!3m2!1sen!2sru!4v1"
-                                        width="100%"
-                                        height="100%"
-                                        style={{ border: 0 }}
-                                        allowFullScreen
-                                        loading="lazy"
-                                    />
-                                </div>
-                            </div>
+                            )}
 
                             {/* Working Hours */}
                             <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm">

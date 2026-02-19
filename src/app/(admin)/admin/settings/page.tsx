@@ -6,7 +6,7 @@ import {
   Moon, Sun, Save, Loader2, Check, Eye, EyeOff,
   Download, Mail, Smartphone, MessageSquare, Lock,
   ChevronDown, ChevronUp, AlertTriangle, RefreshCw,
-  Phone, Send, Facebook, Youtube, Instagram, Share2
+  Phone, Send, Facebook, Youtube, Instagram, Share2, MapPin
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "next-themes";
@@ -124,6 +124,7 @@ export default function AdminSettingsPage() {
   const [contactData, setContactData] = useState({
     phone: "", email: "", whatsapp: "", telegram: "",
     facebook: "", youtube: "", instagram: "",
+    mapUrl: "", showMap: true,
   });
   const [contactLoading, setContactLoading] = useState(true);
   const [contactSaving, setContactSaving] = useState(false);
@@ -490,6 +491,40 @@ export default function AdminSettingsPage() {
                 />
               </div>
             ))}
+
+            {/* Map Settings */}
+            <div className="border-t border-slate-200 dark:border-slate-700 pt-4 mt-4">
+              <div className="flex items-center justify-between mb-3">
+                <label className="text-sm font-bold text-slate-600 dark:text-slate-400 flex items-center gap-2">
+                  <MapPin size={14} />
+                  {isRTL ? "الخريطة في صفحة التواصل" : "Карта на странице контактов"}
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setContactData({ ...contactData, showMap: !contactData.showMap })}
+                  className={`relative w-12 h-6 rounded-full transition-colors ${contactData.showMap ? "bg-cyan-500" : "bg-slate-300 dark:bg-slate-600"
+                    }`}
+                >
+                  <span className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all ${contactData.showMap ? (isRTL ? "left-0.5" : "right-0.5") : (isRTL ? "right-0.5" : "left-0.5")
+                    }`} />
+                </button>
+              </div>
+              {contactData.showMap && (
+                <div className="space-y-1.5">
+                  <p className="text-xs text-slate-400">
+                    {isRTL ? "الصق رابط تضمين خريطة Google Maps (من مشاركة → تضمين خريطة → انسخ src)" : "Вставьте ссылку Google Maps Embed (Поделиться → Встроить → скопируйте src)"}
+                  </p>
+                  <input
+                    type="text"
+                    dir="ltr"
+                    value={contactData.mapUrl || ""}
+                    onChange={(e) => setContactData({ ...contactData, mapUrl: e.target.value })}
+                    className="w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all text-sm"
+                    placeholder="https://www.google.com/maps/embed?pb=..."
+                  />
+                </div>
+              )}
+            </div>
 
             <button
               onClick={async () => {
