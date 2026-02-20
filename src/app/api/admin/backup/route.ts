@@ -1,12 +1,9 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { COOKIE_NAME, decodeSession } from "@/lib/session-core";
-import { cookies } from "next/headers";
+import { getSession } from "@/lib/session";
 
 async function checkAdmin() {
-    const cookieStore = await cookies();
-    const token = cookieStore.get(COOKIE_NAME)?.value;
-    const session = await decodeSession(token);
+    const session = await getSession();
     return session && session.role === "ADMIN";
 }
 

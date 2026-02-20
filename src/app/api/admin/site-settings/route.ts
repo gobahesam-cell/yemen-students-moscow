@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { cookies } from "next/headers";
-import { COOKIE_NAME, decodeSession } from "@/lib/session-core";
+import { getSession } from "@/lib/session";
 import { revalidateTag } from "next/cache";
 
 const DEFAULT_SETTINGS = {
@@ -17,9 +16,7 @@ const DEFAULT_SETTINGS = {
 // جلب إعدادات الموقع (للأدمن)
 export async function GET() {
     try {
-        const cookieStore = await cookies();
-        const token = cookieStore.get(COOKIE_NAME)?.value;
-        const session = await decodeSession(token);
+        const session = await getSession();
 
         if (!session || session.role !== "ADMIN") {
             return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
@@ -38,9 +35,7 @@ export async function GET() {
 // تحديث إعدادات الموقع
 export async function PUT(req: Request) {
     try {
-        const cookieStore = await cookies();
-        const token = cookieStore.get(COOKIE_NAME)?.value;
-        const session = await decodeSession(token);
+        const session = await getSession();
 
         if (!session || session.role !== "ADMIN") {
             return NextResponse.json({ error: "غير مصرح" }, { status: 401 });

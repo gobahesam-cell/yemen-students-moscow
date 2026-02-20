@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { COOKIE_NAME, decodeSession } from "@/lib/session";
+import { getSession } from "@/lib/session";
 import { uploadToCloudinary } from "@/lib/cloudinary";
 
 // POST — رفع صورة إلى Cloudinary (موحّد لجميع الصفحات)
@@ -20,9 +19,7 @@ export async function POST(request: Request) {
             }, { status: 500 });
         }
 
-        const cookieStore = await cookies();
-        const token = cookieStore.get(COOKIE_NAME)?.value;
-        const session = await decodeSession(token);
+        const session = await getSession();
 
         if (!session || !["ADMIN", "EDITOR"].includes(session.role)) {
             return NextResponse.json({ error: "غير مصرح للمستخدم بالرفع" }, { status: 401 });
