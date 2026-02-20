@@ -102,12 +102,12 @@ export function AdminLayoutClient({
                         {/* Logo Area */}
                         <div className="p-6 flex items-center justify-between border-b border-slate-100 dark:border-white/5">
                             <Link href="/" className="flex items-center gap-3 group">
-                                <div className="w-10 h-10 relative bg-yellow-500 rounded-2xl flex items-center justify-center overflow-hidden shadow-lg shadow-yellow-500/20 group-hover:rotate-12 transition-transform duration-300">
-                                    <Image src="/logo.png" alt="Logo" width={24} height={24} className="object-contain invert brightness-0" />
+                                <div className="w-10 h-10 relative bg-white dark:bg-slate-800 rounded-2xl flex items-center justify-center overflow-hidden shadow-lg shadow-black/5 group-hover:scale-105 transition-transform duration-300 p-1">
+                                    <Image src="/logo.png" alt="Logo" width={32} height={32} className="object-contain" />
                                 </div>
                                 <div className="flex flex-col">
                                     <span className="font-black text-lg leading-tight tracking-tight dark:text-white">
-                                        YSM<span className="text-yellow-500">Panel</span>
+                                        YCM<span className="text-yellow-500">Panel</span>
                                     </span>
                                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">{t("adminArea")}</span>
                                 </div>
